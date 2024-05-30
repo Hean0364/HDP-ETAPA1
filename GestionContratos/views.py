@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .forms import FiltroContratosForm
 from django.http import HttpResponse
 from .models import Contrato, ContratoArrendamiento, ContratoEmpleado, ContratoEmpresa
+from Sistema.models import Empresa
 
 def contratos(request):
     contratos = Contrato.objects.all()
@@ -29,18 +31,18 @@ def nuevoContrato(request, tipo_contrato="arrendamiento"):
     mensaje = f"Esta vista crea un nuevo contrato de tipo {tipo_contrato}."
     return HttpResponse(mensaje)
 
-def editarContrato(request, idContrato):
-    mensaje = f"Esta vista edita el contrato con ID {idContrato}."
+def editarContrato(request, contratoId):
+    mensaje = f"Esta vista edita el contrato con ID {contratoId}."
     return HttpResponse(mensaje)
 
-def verContrato(request, idContrato):
-    mensaje = f"Esta vista muestra el contrato con ID {idContrato}."
+def verContrato(request, contratoId):
+    mensaje = f"Esta vista muestra el contrato con ID {contratoId}."
     return HttpResponse(mensaje)
 
-def aprobarContrato(request, idContrato):
-    mensaje = f"Esta vista aprueba el contrato con ID {idContrato}."
+def aprobarContrato(request, contratoId):
+    mensaje = f"Esta vista aprueba el contrato con ID {contratoId}."
     return HttpResponse(mensaje)
 
-def eliminarContrato(request, idContrato):
-    mensaje = f"Esta vista elimina el contrato con ID {idContrato}."
+def eliminarContrato(request, contratoId):
+    mensaje = f"Esta vista elimina el contrato con ID {contratoId}."
     return HttpResponse(mensaje)

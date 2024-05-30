@@ -6,6 +6,3 @@ class FiltroContratosForm(forms.Form):
     contratante = forms.ChoiceField(label='Contratante', choices=[], required=False)
     vigencia = forms.ChoiceField(label='Estado de vigencia', choices=[('', 'Todos'), ('vigentes', 'Vigentes'), ('no_vigentes', 'No Vigentes')], required=False)
 
-    def __init__(self, contratantes, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['contratante'].choices = [(contratante.id, contratante.nombre) for contratante in contratantes]

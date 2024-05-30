@@ -11,6 +11,9 @@
 <body>
     <h1>Contratos</h1>
     <!-- Filtro -->
+
+    
+    <!-- Consulta Contratos -->
     <table>
         <thead>
             <tr>
@@ -24,15 +27,15 @@
         <tbody>
             {% for contrato in contratos %}
             <tr>
-                <td>{{ contrato.contrato.contrato_id }}</td>
+                <td>{{ contrato.contrato.contratoId }}</td>
                 <td>{{ contrato.contratante.nombre }}</td>
-                <td>{{ contrato.contrato.fecha_inicio }}</td> 
-                <td>{{ contrato.contrato.fecha_fin }}</td>
+                <td>{{ contrato.contrato.fechaInicio }}</td> 
+                <td>{{ contrato.contrato.fechaFin }}</td>
                 <td>
-                    <a href="{% url 'verContrato' contrato.contrato.contrato_id %}">Ver</a>
-                    <a href="{% url 'aprobarContrato' contrato.contrato.contrato_id %}">Aprobar</a>
-                    <a href="{% url 'editarContrato' contrato.contrato.contrato_id %}">Editar</a>
-                    <a href="{% url 'eliminarContrato' contrato.contrato.contrato_id %}">Eliminar</a>
+                    <a href="{% url 'verContrato' contrato.contrato.contratoId %}">Ver</a>
+                    <a href="{% url 'aprobarContrato' contrato.contrato.contratoId %}">Aprobar</a>
+                    <a href="{% url 'editarContrato' contrato.contrato.contratoId %}">Editar</a>
+                    <a href="{% url 'eliminarContrato' contrato.contrato.contratoId %}">Eliminar</a>
                 </td>
             </tr>
             {% endfor %}

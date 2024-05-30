@@ -43,12 +43,12 @@ class Local(models.Model):
 
 # Modelo: Empresa
 class Empresa(models.Model):
-    empresa_id = models.AutoField(primary_key=True)
+    empresaId = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
     representante = models.ForeignKey(Persona, on_delete=models.CASCADE, related_name='empresasRepresentadas')
 
     def __str__(self):
-        return f"Empresa {self.empresa_id} - {self.nombre}"
+        return f"Empresa {self.empresaId} - {self.nombre}"
 
 # Modelo: Domicilio
 class Domicilio(models.Model):
