@@ -8,12 +8,12 @@ urlpatterns = [
     path('personal/', views.contratosPersonal, name='contratosPersonal'),  # Vista para contratos de personal
     
     # URLs filtradas
-    path('/<contratante>/<desdeFecha>/<hastaFecha>/<vigente>/', views.contratosFiltrados, name='contratosFiltrados'),
-    path('personal/<filtroPersona>/<desdeFecha>/<vigente>/', views.contratosPersonalFiltrados, name='contratosPersonalFiltrados'),
+    # path('/<contratante>/<desdeFecha>/<hastaFecha>/<vigente>/', views.contratosFiltrados, name='contratosFiltrados'),
+    # path('personal/<filtroPersona>/<desdeFecha>/<vigente>/', views.contratosPersonalFiltrados, name='contratosPersonalFiltrados'),
 
     path('crear/', views.nuevoContrato, name='nuevoContrato'),  # Vista para crear un nuevo contrato
 
-    path('crear/<tipoContrato>/', views.nuevoContrato, name='nuevoContrato'),  # Vista para crear un nuevo contrato
+    path('<tipoContrato>/crear/', views.nuevoContrato, name='nuevoContrato'),  # Vista para crear un nuevo contrato
     path('<int:contratoId>/editar/', views.editarContrato, name='editarContrato'),  # Vista para editar un contrato existente
     path('<int:contratoId>/ver/', views.verContrato, name='verContrato'),  # Vista para ver un contrato existente
     path('<int:contratoId>/aprobar/', views.aprobarContrato, name='aprobarContrato'),  # Vista para aprobar un contrato

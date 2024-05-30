@@ -58,7 +58,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            "templates",
+            "HDP-ETAPA1/GestionContratos/templates",
+            "HDP-ETAPA1/Sistema/templates"
         ],
         'APP_DIRS': True,
         'OPTIONS': {

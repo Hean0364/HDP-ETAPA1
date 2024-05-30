@@ -1,26 +1,49 @@
+{% extends 'base.html' %}
+
 {% comment %}
-    Esta vista no recibe nada.
+    Esta vista recibe: form, error
 {% endcomment %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Contratos</title>
-</head>
-<body>
+
+{% block title %}Contratos Arrendamiento{% endblock %}
+
+{% block head %}
+{% endblock %}
+{% block content %}
     <h1>Contratos</h1>
     <!-- Filtro -->
+    <nav>
+        <ul>
+            <li><a href="{% url 'contratosArrendamiento' %}">Arrendamiento</a></li>
+            <li><a href="{% url 'contratosServicio' %}">Servicio</a></li>
+            <li><a href="{% url 'contratosPersonal' %}">Personal</a></li>
 
+            </div>
+        </ul>
+    </nav>
+    
+    <a href="{{ request.path }}crear/">Nuevo Contrato</a>
+
+    <h2>Filtrar</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{form}}
+        <button>
+            Filtrar
+        </button>
+    </form> 
     
     <!-- Consulta Contratos -->
+
     <table>
         <thead>
             <tr>
                 <th>Contrato</th>
+                <th>Tipo</th>
                 <th>Contratante</th>
                 <th>Fecha Inicio</th>
                 <th>Fecha Fin</th>
+                <th>Estado</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -28,9 +51,15 @@
             {% for contrato in contratos %}
             <tr>
                 <td>{{ contrato.contrato.contratoId }}</td>
+                <td>{{ contrato.tipo }}</td>
+                {% if contrato.tipo == "Empresa" or contrato.tipo == "Arrendamiento" %}
                 <td>{{ contrato.contratante.nombre }}</td>
+                {% else %}
+                <td>{{ contrato.contratante.persona.nombre }}</td>
+                {% endif %}
                 <td>{{ contrato.contrato.fechaInicio }}</td> 
                 <td>{{ contrato.contrato.fechaFin }}</td>
+                <td>{{ contrato.contrato.vigente }}</td>
                 <td>
                     <a href="{% url 'verContrato' contrato.contrato.contratoId %}">Ver</a>
                     <a href="{% url 'aprobarContrato' contrato.contrato.contratoId %}">Aprobar</a>
@@ -41,5 +70,5 @@
             {% endfor %}
         </tbody>
     </table>
-</body>
-</html>
+
+{% endblock %}
