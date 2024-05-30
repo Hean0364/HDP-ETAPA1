@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,13 +11,18 @@
         <nav>
             <ul>
                 <li><a href="{% url 'home' %}">Home</a></li>
-                <!-- Lógica de cuentas -->
-                <!-- Si se ha iniciado sesión.
-                    Si es admin.
-                    <li><a href="{% url 'admin' %}">Admin</a></li>
-                <li><a href="{% url 'singout' %}">Login</a></li>-->
-                <!-- Sin sesión.
-                <li><a href="{% url 'singout' %}">Login</a></li>-->
+                <div>
+                {% if user.is_authenticated %}
+                    {% if is_admin %}
+                    <li><a href="/admin/">Admin</a></li>
+                    {% endif %}
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                <!-- Sin sesión.-->
+                <li><a href="{% url 'login' %}">Login</a></li>
+                {% endif %}
+
+                </div>
             </ul>
         </nav>
     </header>
