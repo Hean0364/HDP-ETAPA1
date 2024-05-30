@@ -10,6 +10,7 @@ class Contrato(models.Model):
     contenido = models.TextField()
     contratista = models.ForeignKey('Sistema.Empleado', on_delete=models.PROTECT, related_name='contratacionesEmpleado', blank=True) # Referencia al empleado que elabora el contrato
 
+
     def __str__(self):
         return f"Contrato {self.contrato_id}"
 

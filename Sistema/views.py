@@ -6,28 +6,21 @@ from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 #from .forms import TaskForm
 # Create your views here.
+from GestionCentroComercial.utils import checkAdmin
 
 def home(request):
-    is_admin = request.user.groups.filter(name='Administrador').exists()
-    return render(request, 'home.html', {'is_admin': is_admin})
+    return render(request, 'home.html', {'esAdministrador': checkAdmin(request)})
 
 def ingresar(request):
-    # Si el método de solicitud es GET, muestra el formulario de inicio de sesión
     if request.method == "GET":
-        return render(request, "login.html", {
-            "form": AuthenticationForm  # Pasar el formulario de autenticación al contexto del template
-        })
+        return render(request, "login.html", {"form": AuthenticationForm()})
     else:
-        # Si el método de solicitud es POST, intenta autenticar al usuario
-        user = authenticate(request, username=request.POST["username"], password=request.POST["password"])
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
         if user is None:
-            # Si la autenticación falla, vuelve a mostrar el formulario con un mensaje de error
-            return render(request, "login.html", {
-                "form": AuthenticationForm,  # Pasar el formulario de autenticación al contexto del template
-                "error": "Contraseña o usuario incorrecto."  # Mensaje de error para mostrar en el formulario
-            })
+            return render(request, "login.html", {"form": AuthenticationForm(), "error": "Contraseña o usuario incorrecto."})
         else:
-            # Si la autenticación es exitosa, inicia sesión y redirige al usuario a la página de tareas
             login(request, user)
             return redirect("home")
         

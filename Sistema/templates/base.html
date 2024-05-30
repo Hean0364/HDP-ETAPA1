@@ -13,7 +13,7 @@
                 <li><a href="{% url 'home' %}">Home</a></li>
                 <div>
                 {% if user.is_authenticated %}
-                    {% if is_admin %}
+                    {% if esAdministrador %}
                     <li><a href="/admin/">Admin</a></li>
                     {% endif %}
                 <li><a href="{% url 'logout' %}">Logout</a></li>

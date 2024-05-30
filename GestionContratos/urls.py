@@ -2,13 +2,13 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.contratosArrendamiento, name='contratosArrendamiento'),  # Vista por defecto para contratos de arrendamiento
+    path('', views.contratos, name='contratos'),  # Vista por defecto para contratos de arrendamiento
     path('arrendamiento/', views.contratosArrendamiento, name='contratosArrendamiento'),  # Vista para contratos de arrendamiento
     path('servicio/', views.contratosServicio, name='contratosServicio'),  # Vista para contratos de servicio
     path('personal/', views.contratosPersonal, name='contratosPersonal'),  # Vista para contratos de personal
     
     # URLs filtradas
-    path('<tipoContrato>/<filtroEmpresa>/<desdeFecha>/<vigente>/', views.contratosFiltrados, name='contratosFiltrados'),
+    path('/<contratante>/<desdeFecha>/<hastaFecha>/<vigente>/', views.contratosFiltrados, name='contratosFiltrados'),
     path('personal/<filtroPersona>/<desdeFecha>/<vigente>/', views.contratosPersonalFiltrados, name='contratosPersonalFiltrados'),
 
     path('crear/', views.nuevoContrato, name='nuevoContrato'),  # Vista para crear un nuevo contrato

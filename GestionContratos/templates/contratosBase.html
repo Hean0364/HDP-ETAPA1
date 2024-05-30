@@ -1,0 +1,42 @@
+{% comment %}
+    Esta vista no recibe nada.
+{% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contratos</title>
+</head>
+<body>
+    <h1>Contratos</h1>
+    <!-- Filtro -->
+    <table>
+        <thead>
+            <tr>
+                <th>Contrato</th>
+                <th>Contratante</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for contrato in contratos %}
+            <tr>
+                <td>{{ contrato.contrato.contrato_id }}</td>
+                <td>{{ contrato.contratante.nombre }}</td>
+                <td>{{ contrato.contrato.fecha_inicio }}</td> 
+                <td>{{ contrato.contrato.fecha_fin }}</td>
+                <td>
+                    <a href="{% url 'verContrato' contrato.contrato.contrato_id %}">Ver</a>
+                    <a href="{% url 'aprobarContrato' contrato.contrato.contrato_id %}">Aprobar</a>
+                    <a href="{% url 'editarContrato' contrato.contrato.contrato_id %}">Editar</a>
+                    <a href="{% url 'eliminarContrato' contrato.contrato.contrato_id %}">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,8 +1,15 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from .models import Contrato, ContratoArrendamiento, ContratoEmpleado, ContratoEmpresa
+
+def contratos(request):
+    contratos = Contrato.objects.all()
+    return render(request, "contratosBase.html", {"contratos": contratos})
 
 def contratosArrendamiento(request):
-    return HttpResponse("Esta vista maneja los contratos de arrendamiento.")
+    contratos = ContratoArrendamiento.objects.all()
+    return render(request, "contratosBase.html", {"contratos": contratos})
+
 
 def contratosServicio(request):
     return HttpResponse("Esta vista maneja los contratos de servicio.")
@@ -22,18 +29,18 @@ def nuevoContrato(request, tipo_contrato="arrendamiento"):
     mensaje = f"Esta vista crea un nuevo contrato de tipo {tipo_contrato}."
     return HttpResponse(mensaje)
 
-def editarContrato(request, id_contrato):
-    mensaje = f"Esta vista edita el contrato con ID {id_contrato}."
+def editarContrato(request, idContrato):
+    mensaje = f"Esta vista edita el contrato con ID {idContrato}."
     return HttpResponse(mensaje)
 
-def verContrato(request, id_contrato):
-    mensaje = f"Esta vista muestra el contrato con ID {id_contrato}."
+def verContrato(request, idContrato):
+    mensaje = f"Esta vista muestra el contrato con ID {idContrato}."
     return HttpResponse(mensaje)
 
-def aprobarContrato(request, id_contrato):
-    mensaje = f"Esta vista aprueba el contrato con ID {id_contrato}."
+def aprobarContrato(request, idContrato):
+    mensaje = f"Esta vista aprueba el contrato con ID {idContrato}."
     return HttpResponse(mensaje)
 
-def eliminarContrato(request, id_contrato):
-    mensaje = f"Esta vista elimina el contrato con ID {id_contrato}."
+def eliminarContrato(request, idContrato):
+    mensaje = f"Esta vista elimina el contrato con ID {idContrato}."
     return HttpResponse(mensaje)

@@ -39,7 +39,7 @@ class Local(models.Model):
     descripcion = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Local {self.local_id} - {self.nombre}"
+        return f"Local {self.localId} - {self.nombre}"
 
 # Modelo: Empresa
 class Empresa(models.Model):
