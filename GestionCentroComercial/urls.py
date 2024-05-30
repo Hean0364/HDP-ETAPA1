@@ -16,9 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from Sistema import views as SistemaViews
 from django.contrib.auth import views as auth_views
 
+from Sistema import views as SistemaViews
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # URL para el panel de administración
