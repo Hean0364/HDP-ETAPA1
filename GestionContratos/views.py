@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from .models import Contrato, ContratoArrendamiento, ContratoEmpleado, ContratoEmpresa
 from Sistema.models import Empresa, Empleado, Local, Persona, Domicilio
 from GestionCentroComercial.utils import TipoContrato, checkAdmin, requiereLogin, requiereAdmin, guardarContratoBase, guardarContratoArrendamiento, guardarEmpresa, test,guardarEmpleado,guardarContratoServicio,guardarContratoPersonal
-
+from .utils import contratoTipoDesdeContratoBase
 
 def contratos(request):
     return redirect(contratosArrendamiento)
@@ -126,11 +126,6 @@ def contratosPersonalFiltrados(request, filtro_persona, desde_fecha, vigente):
     mensaje = f"Esta vista maneja los contratos de personal filtrados por persona: {filtro_persona}, desde fecha: {desde_fecha}, y vigente: {vigente}."
     return HttpResponse(mensaje)
 
-
-
-def guardarModeloFormularioContratoBase(contratoBase, contratista, fechaInicio, fechaFin, Vigente, Contenido):
-    contratoBase
-
 @requiereLogin
 def nuevoContrato(request, tipoContrato="arrendamiento"):
     esAdmin = checkAdmin(request)
@@ -155,7 +150,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
             print(formularioLocal.fields["locales"].choices)
             print(localesOpciones)
             return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin})
-            
+        
         elif tipoContrato==TipoContrato.SERVICIO_EMPRESA.value.lower():
             print("SE EJECUTO")
             formularioEmpresa = EmpresaForm(request.POST)
@@ -164,6 +159,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
         elif tipoContrato==TipoContrato.PERSONAL_EMPLEADO.value.lower():
             formularioEmpleado = EmpleadoForm(request.POST)
             return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin})
+        
         else: # nunca debería de suceder
             return HttpResponse("Error")
     else: # es un request en método "POST"
@@ -211,7 +207,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
 
                 
                 referer = request.META.get('HTTP_REFERER', reverse('home'))
-                return redirect(referer) 
+                return redirect('contratos') 
             else:
                 mensaje = "Alguno de los datos ingresados no son válidos."
                 return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "error":mensaje})
@@ -250,8 +246,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                 guardarContratoServicio(nuevoContratoServicio, nuevaEmpresa)
 
                 referer = request.META.get('HTTP_REFERER', reverse('home'))
-                return redirect(referer) 
-            
+                return redirect('contratos')             
             else:
                 mensaje = "Alguno de los datos ingresados no son válidos."
                 return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "error":mensaje})
@@ -289,8 +284,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                 guardarContratoPersonal(nuevoContratoPersonal, nuevoEmpleado)
 
                 referer = request.META.get('HTTP_REFERER', reverse('home'))
-                return redirect(referer) 
-
+                return redirect('contratos') 
             else:
                 mensaje = "Alguno de los datos ingresados no son válidos."
                 return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin, "error":mensaje})
@@ -300,24 +294,6 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
             return HttpResponse("Error")
             
 
-
-        
-
-# ******************************************************************************************************************    
-
-def formularioContratoArrendamiento(request, formularioBase, esAdmin):
-    formularioEmpresa = EmpresaForm(request.POST)
-    formularioLocal = LocalForm(request.POST)
-    return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin})
-
-def formularioContratoEmpleado(request, formularioBase, esAdmin):
-    
-    formularioEmpleado = EmpleadoForm(request.POST)
-    return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin})
-
-def formularioContratoServicio(request, formularioBase, esAdmin):
-    formularioEmpresa = EmpresaForm(request.POST)
-    return render(request,"formularioContratoServicio.html",{"formBase":formularioBase, "formEmpresa":formularioEmpresa, "esAdministrador": esAdmin})
 
 @requiereLogin
 def editarContrato(request, contratoId):
@@ -338,5 +314,25 @@ def aprobarContrato(request, contratoId):
 @requiereLogin
 @requiereAdmin
 def eliminarContrato(request, contratoId):
-    mensaje = f"Esta vista elimina el contrato con ID {contratoId}."
-    return HttpResponse(mensaje)
+    try:
+        contratoBase = Contrato.objects.get(contratoId=contratoId)
+        contrato = contratoTipoDesdeContratoBase(contratoBase)
+    except:
+        return redirect('contratos')
+    
+    exito = False
+
+    if request.method == "GET":
+        # Renderiza la plantilla de confirmación de eliminación con los datos del contrato
+        return render(request, 'confirmarEliminacion.html', {'objeto': contrato, 'esAdministrador': True})
+    
+    else:  # Significa que se recibe una solicitud "POST" confirmando la eliminación
+        try:
+            contrato.delete()  # Elimina el contrato de la base de datos
+            exito = True
+            return render(request, 'confirmarEliminacion.html', {'objeto': contrato, "mensajeExito": exito, 'esAdministrador': True})
+
+        
+        except Exception as ex:
+            # Renderiza la plantilla de confirmación de eliminación con el mensaje de error
+            return render(request, 'confirmarEliminacion.html', {'objeto': contrato, "mensajeExito": exito,'error': str(ex), 'esAdministrador': True})
