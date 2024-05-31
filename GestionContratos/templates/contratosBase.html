@@ -69,8 +69,11 @@
                             <a href="{% url 'aprobarContrato' contrato.contrato.contratoId %}">Aprobar</a>
                         {% endif %}
                     {% endif %}
-                    <a href="{% url 'editarContrato' contrato.contrato.contratoId %}">Editar</a>
+                    {% if contrato.contrato.contratista.user == user %}
+                        <a href="{% url 'editarContrato' contrato.contrato.contratoId %}">Editar</a>
+                    {% endif %}
                     {% if esAdministrador %}
+                        <a href="{% url 'editarContrato' contrato.contrato.contratoId %}">Editar</a>
                         <a href="{% url 'eliminarContrato' contrato.contrato.contratoId %}">Eliminar</a>
                     {% endif %}
                 </td>

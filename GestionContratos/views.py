@@ -7,6 +7,7 @@ from .models import Contrato, ContratoArrendamiento, ContratoEmpleado, ContratoE
 from Sistema.models import Empresa, Empleado, Local, Persona, Domicilio
 from GestionCentroComercial.utils import TipoContrato, checkAdmin, requiereLogin, requiereAdmin, guardarContratoBase, guardarContratoArrendamiento, guardarEmpresa, test,guardarEmpleado,guardarContratoServicio,guardarContratoPersonal
 from .utils import contratoTipoDesdeContratoBase
+from GestionCentroComercial.utils import definirCamposContratoBase, definirCamposEmpresa, definirCamposEmpleado, definirCamposContratoArrendamiento, definirCamposContratoServicio, definirCamposContratoPersonal
 
 def contratos(request):
     return redirect(contratosArrendamiento)
@@ -44,7 +45,7 @@ def contratosArrendamiento(request):
                 if vigencia != "":
                     contratosA = contratosA.filter(contrato__vigente = vigencia)
 
-        return render(request, "contratosBase.html", {"contratos": contratosA, "form": form,'esAdministrador': checkAdmin(request)})
+        return render(request, "contratosBase.html", {"contratos": contratosA, "form": form,'esAdministrador': checkAdmin(request), "userActual":request.user})
 
 @requiereLogin
 def contratosServicio(request):
@@ -79,7 +80,7 @@ def contratosServicio(request):
                 if vigencia != "":
                     contratosA = contratosA.filter(contrato__vigente = vigencia)
 
-        return render(request, "contratosBase.html", {"contratos": contratosA, "form": form,'esAdministrador': checkAdmin(request)})
+        return render(request, "contratosBase.html", {"contratos": contratosA, "form": form,'esAdministrador': checkAdmin(request), "userActual":request.user})
 
 @requiereLogin
 def contratosPersonal(request):
@@ -114,17 +115,7 @@ def contratosPersonal(request):
                 if vigencia != "":
                     contratosA = contratosA.filter(contrato__vigente = vigencia)
 
-        return render(request, "contratosBase.html", {"contratos": contratosA, "form": form,'esAdministrador': checkAdmin(request)})
-
-@requiereLogin
-def contratosFiltrados(request, tipo_contrato, filtro_empresa, desde_fecha, vigente):
-    mensaje = f"Esta vista maneja los contratos filtrados por tipo de contrato: {tipo_contrato}, empresa: {filtro_empresa}, desde fecha: {desde_fecha}, y vigente: {vigente}."
-    return HttpResponse(mensaje)
-
-@requiereLogin
-def contratosPersonalFiltrados(request, filtro_persona, desde_fecha, vigente):
-    mensaje = f"Esta vista maneja los contratos de personal filtrados por persona: {filtro_persona}, desde fecha: {desde_fecha}, y vigente: {vigente}."
-    return HttpResponse(mensaje)
+        return render(request, "contratosBase.html", {"contratos": contratosA, "form": form,'esAdministrador': checkAdmin(request), "userActual":request.user})
 
 @requiereLogin
 def nuevoContrato(request, tipoContrato="arrendamiento"):
@@ -152,7 +143,6 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
             return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin})
         
         elif tipoContrato==TipoContrato.SERVICIO_EMPRESA.value.lower():
-            print("SE EJECUTO")
             formularioEmpresa = EmpresaForm(request.POST)
             return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin})
         
@@ -184,7 +174,8 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
             
             # Datos del contrato particular
     
-            if formularioBase.is_valid() & formularioEmpresa.is_valid() & formularioLocal.is_valid():
+            if formularioBase.is_valid() and formularioEmpresa.is_valid() and formularioLocal.is_valid():
+                
                 # Modelo contrato particular
                 nuevoContratoBase = Contrato()
                 nuevoContratoArrendamiento = ContratoArrendamiento(contrato=nuevoContratoBase)
@@ -225,7 +216,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
 
             formularioBase.fields['contratista'].initial = Empleado.objects.get(user=request.user)
 
-            if formularioBase.is_valid() & formularioEmpresa.is_valid():
+            if formularioBase.is_valid() and formularioEmpresa.is_valid():
                 # Modelo contrato particular
                 nuevoContratoBase = Contrato()
                 nuevoContratoServicio = ContratoEmpresa(contrato=nuevoContratoBase)
@@ -266,7 +257,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
             formularioBase.fields['contratista'].initial = Empleado.objects.get(user=request.user)
             
             # Datos del contrato particular
-            if formularioBase.is_valid() & formularioEmpleado.is_valid():
+            if formularioBase.is_valid() and formularioEmpleado.is_valid():
                 # Modelo contrato particular
                 nuevoContratoBase = Contrato()
                 nuevoContratoPersonal = ContratoEmpleado(contrato=nuevoContratoBase)
@@ -297,9 +288,77 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
 
 @requiereLogin
 def editarContrato(request, contratoId):
-    mensaje = f"Esta vista edita el contrato con ID {contratoId}."
-    return HttpResponse(mensaje)
+    # Validar permiso de acceso
+    esAdmin = checkAdmin(request)
+    
+    # Obtener Contrato por contratoId
+    try:
+        contratoBase = Contrato.objects.get(contratoId=contratoId)
+        # TsODO: eliminar este comentario 
+        contrato = contratoTipoDesdeContratoBase(contratoBase)
 
+        #contrato = ContratoArrendamiento()
+    except:
+        return redirect('contratos')
+
+    permisos = esAdmin or contratoBase.contratista.user == request.user
+    if not permisos:
+        return redirect('contratos')        
+    else:
+        print("LLego a Inicio Algoritmo")
+        formularioBase = ContratoForm()
+        print(contrato)
+        # Metodos de control
+        if esAdmin:
+            formularioBase.fields['vigente'].disabled = False    
+        if contrato.tipo==TipoContrato.ARRENDAMIENTO_ARRENDAMIENTO.value:
+            print("ha llegado a "+ contrato.tipo)
+
+
+            # Creamos formularios
+            formularioEmpresa = EmpresaForm()
+            formularioLocal = LocalForm()
+
+            # Definimos instancias 
+            actualContratoBase = contrato.contrato
+            actualContratoArrendamiento = contrato
+            actualEmpresa = contrato.contratante
+
+            formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
+            formularioEmpresa = definirCamposEmpresa(actualEmpresa, formularioEmpresa)
+            formularioLocal = definirCamposContratoArrendamiento(actualContratoArrendamiento, formularioLocal)
+
+            if request.method == "GET":
+                return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin})
+            else:
+                if formularioBase.is_valid() and formularioEmpresa.is_valid() and formularioLocal.is_valid():
+                    test()
+
+                    referer = request.META.get('HTTP_REFERER', reverse('home'))
+                    return redirect('contratos') 
+
+                else:
+                    mensaje = "Alguno de los datos ingresados no son válidos."
+                    return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "error":mensaje})
+        
+        elif contrato.tipo==TipoContrato.EMPRESA.value:
+            # TODO:
+            test()
+
+
+        elif contrato.tipo==TipoContrato.EMPLEADO.value:
+            # TODO:
+            test()
+
+        else:
+            return HttpResponse("Error inesperado.")
+
+
+        # FIXME: Fin
+        mensaje = f"Esta vista edita el contrato con ID {contratoId}."
+        return HttpResponse(mensaje)
+
+# SIN IMPLEMENTAR
 @requiereLogin
 def verContrato(request, contratoId):
     mensaje = f"Esta vista muestra el contrato con ID {contratoId}."

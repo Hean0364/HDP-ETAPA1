@@ -94,3 +94,59 @@ def guardarContratoPersonal(contratoPersonalModelo, empleadoModelo):
     test()
     contratoPersonalModelo.contratante = empleadoModelo
     contratoPersonalModelo.save()
+# *****************************************************************************
+def definirCamposContratoBase(contratoBaseModelo, contratoBaseFormulario):
+    datosContratoBase = {
+        "contratista": contratoBaseModelo.contratista,
+        "fechaInicio": contratoBaseModelo.fechaInicio,
+        "fechaFin": contratoBaseModelo.fechaFin,
+        "vigente": contratoBaseModelo.vigente,
+        "contenido": contratoBaseModelo.contenido
+    }
+    contratoBaseFormulario.initial = datosContratoBase
+    return contratoBaseFormulario
+
+def definirCamposEmpresa(empresaModelo, empresaFormulario):
+    datosEmpresa = {
+        "empresaNombre": empresaModelo.nombre,
+        "representanteNombre": empresaModelo.representante.nombre,
+        "representanteApellido": empresaModelo.representante.apellido,
+        "representanteDui": empresaModelo.representante.dui
+    }
+    empresaFormulario.initial = datosEmpresa
+    return empresaFormulario
+
+def definirCamposEmpleado(empleadoModelo, empleadoFormulario):
+    datosEmpleado = {
+        "nombre": empleadoModelo.persona.nombre,
+        "apellido": empleadoModelo.persona.apellido,
+        "dui": empleadoModelo.persona.dui,
+        "ciudad": empleadoModelo.domicilio.ciudad,
+        "direccion": empleadoModelo.domicilio.direccion,
+        "pais": empleadoModelo.domicilio.pais,
+        "departamento": empleadoModelo.domicilio.departamento,
+        "profesion": empleadoModelo.profesion
+    }
+    empleadoFormulario.initial = datosEmpleado
+    return empleadoFormulario
+
+def definirCamposContratoArrendamiento(contratoArrrendamientoModelo, contratoArrendamientoFormulario):
+    datosLocal = {
+        "locales": contratoArrrendamientoModelo.reserva.localId
+    }
+    contratoArrendamientoFormulario.initial = datosLocal
+    return contratoArrendamientoFormulario
+
+def definirCamposContratoServicio(contratoServicioModelo, contratoServicioFormulario):
+    datosContratoServicio = {
+        "contratante": contratoServicioModelo.contratante
+    }
+    contratoServicioFormulario.initial = datosContratoServicio
+    return contratoServicioFormulario
+
+def definirCamposContratoPersonal(contratoPersonalModelo, contratoPersonalFormulario):
+    datosContratoPersonal = {
+        "contratante": contratoPersonalModelo.contratante
+    }
+    contratoPersonalFormulario.initial = datosContratoPersonal
+    return contratoPersonalFormulario
