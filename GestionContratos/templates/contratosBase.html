@@ -64,7 +64,7 @@
                     <a href="{% url 'verContrato' contrato.contrato.contratoId %}">Ver</a>
                     {% if esAdministrador %}
                         {% if contrato.contrato.vigente %}
-                            <a href="{% url 'aprobarContrato' contrato.contrato.contratoId %}">Desaprobar</a>
+                            <a href="{% url 'desaprobarContrato' contrato.contrato.contratoId %}">Desaprobar</a>
                         {% else %}
                             <a href="{% url 'aprobarContrato' contrato.contrato.contratoId %}">Aprobar</a>
                         {% endif %}

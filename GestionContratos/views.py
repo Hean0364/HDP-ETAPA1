@@ -308,8 +308,27 @@ def verContrato(request, contratoId):
 @requiereLogin
 @requiereAdmin
 def aprobarContrato(request, contratoId):
-    mensaje = f"Esta vista aprueba el contrato con ID {contratoId}."
-    return HttpResponse(mensaje)
+    try:
+        contratoBase = Contrato.objects.get(contratoId=contratoId)
+        contratoBase.vigente = True
+        contratoBase.save()
+        referer = request.META.get('HTTP_REFERER', reverse('home'))
+        return redirect(referer) 
+    except:
+        return redirect('contratos')
+    
+@requiereLogin
+@requiereAdmin
+def desaprobarContrato(request, contratoId):
+    try:
+        contratoBase = Contrato.objects.get(contratoId=contratoId)
+        contratoBase.vigente = False
+        contratoBase.save()
+        
+        referer = request.META.get('HTTP_REFERER', reverse('home'))
+        return redirect(referer) 
+    except:
+        return redirect('contratos')
 
 @requiereLogin
 @requiereAdmin
