@@ -17,7 +17,7 @@ class Persona(models.Model):
 # Modelo: Empleado
 class Empleado(models.Model):
     empleadoId = models.AutoField(primary_key=True)  # Campo de identificación independiente para Empleado
-    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     persona = models.OneToOneField(Persona, on_delete=models.CASCADE)
     profesion = models.CharField(max_length=100)
     domicilio = models.ForeignKey('Domicilio', on_delete=models.CASCADE)

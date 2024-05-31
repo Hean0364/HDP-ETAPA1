@@ -23,7 +23,7 @@ class ContratoEmpleado(models.Model):
     tipo = models.CharField(max_length=20, default=TipoContrato.EMPLEADO.value, editable=False)
 
     def __str__(self):
-        return f"ContratoEmpleado {self.contrato.contratoId} - Empleado {self.contratante_id} - ContratoID {self.contrato.contratoId}"
+        return f"ContratoEmpleado {self.contrato.contratoId} - Empleado {self.contratante.persona.nombre} - ContratoID {self.contrato.contratoId}"
 
 # Modelo: ContratoEmpresa
 class ContratoEmpresa(models.Model):
@@ -32,7 +32,7 @@ class ContratoEmpresa(models.Model):
     tipo = models.CharField(max_length=20, default=TipoContrato.EMPRESA.value, editable=False)
 
     def __str__(self):
-        return f"ContratoEmpresa {self.contrato.contratoId} - Empresa {self.contratante_id}  - ContratoID {self.contrato.contratoId}"
+        return f"ContratoEmpresa {self.contrato.contratoId} - Empresa {self.contratante.nombre}  - ContratoID {self.contrato.contratoId}"
 
 # Modelo: ContratoArrendamiento
 class ContratoArrendamiento(models.Model):
@@ -42,4 +42,4 @@ class ContratoArrendamiento(models.Model):
     tipo = models.CharField(max_length=20, default=TipoContrato.ARRENDAMIENTO.value, editable=False)
 
     def __str__(self):
-        return f"ContratoArrendamiento {self.contratoId} - Empresa {self.contratante_id} - ContratoID {self.contrato.contratoId}"
+        return f"ContratoArrendamiento {self.contrato.contratoId} - Empresa {self.contratante.nombre} - ContratoID {self.contrato.contratoId}"
