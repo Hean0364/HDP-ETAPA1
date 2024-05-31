@@ -10,6 +10,8 @@ class FiltroContratosForm(forms.Form):
     contratante = forms.ChoiceField(label='Contratante', choices=[], required=False)
     vigencia = forms.ChoiceField(label='Estado de vigencia', choices=[('', 'Todos'), (True, 'Vigentes'), (False, 'No Vigentes')], required=False)
 
+# ******************************
+
 class EmpleadoForm(forms.Form):
     nombre = forms.CharField(max_length=50)
     apellido = forms.CharField(max_length=50)

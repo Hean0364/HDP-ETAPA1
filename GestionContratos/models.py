@@ -28,7 +28,7 @@ class ContratoEmpleado(models.Model):
 # Modelo: ContratoEmpresa
 class ContratoEmpresa(models.Model):
     contrato = models.OneToOneField(Contrato, on_delete=models.CASCADE, related_name='contratoEmpresaDetalle') # contrato del que deriva
-    contratante = models.ForeignKey('Sistema.Empresa', on_delete=models.PROTECT, related_name='contratosEmpresa')
+    contratante = models.ForeignKey('Sistema.Empresa', on_delete=models.CASCADE, related_name='contratosEmpresa')
     tipo = models.CharField(max_length=20, default=TipoContrato.EMPRESA.value, editable=False)
 
     def __str__(self):
@@ -37,7 +37,7 @@ class ContratoEmpresa(models.Model):
 # Modelo: ContratoArrendamiento
 class ContratoArrendamiento(models.Model):
     contrato = models.OneToOneField(Contrato, on_delete=models.CASCADE, related_name='contratoArrendamientoDetalle') # contrato del que deriva
-    contratante = models.ForeignKey('Sistema.Empresa', on_delete=models.PROTECT, related_name='contratosArrendamiento')
+    contratante = models.ForeignKey('Sistema.Empresa', on_delete=models.CASCADE, related_name='contratosArrendamiento')
     reserva = models.ForeignKey('Sistema.Local', on_delete=models.PROTECT, related_name='contratosArrendamiento')
     tipo = models.CharField(max_length=20, default=TipoContrato.ARRENDAMIENTO.value, editable=False)
 

@@ -7,7 +7,7 @@ from .models import Contrato, ContratoArrendamiento, ContratoEmpleado, ContratoE
 from Sistema.models import Empresa, Empleado, Local, Persona, Domicilio
 from GestionCentroComercial.utils import TipoContrato, checkAdmin, requiereLogin, requiereAdmin, guardarContratoBase, guardarContratoArrendamiento, guardarEmpresa, test,guardarEmpleado,guardarContratoServicio,guardarContratoPersonal
 from .utils import contratoTipoDesdeContratoBase
-from GestionCentroComercial.utils import definirCamposContratoBase, definirCamposEmpresa, definirCamposEmpleado, definirCamposContratoArrendamiento, definirCamposContratoServicio, definirCamposContratoPersonal
+from GestionCentroComercial.utils import definirCamposContratoBase, definirCamposEmpresa, definirCamposEmpleado, definirCamposContratoArrendamiento, definirCamposContratoServicio, definirCamposContratoPersonal, asignacionContratoArrendamiento, asignacionContratoPersonal, asignacionContratoServicio
 
 def contratos(request):
     return redirect(contratosArrendamiento)
@@ -130,7 +130,6 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
         formularioBase.fields['contratista'].initial = Empleado.objects.get(user=request.user)
 
         if tipoContrato==TipoContrato.ARRENDAMIENTO_ARRENDAMIENTO.value.lower():
-            #formularioContratoArrendamiento(request, formularioBase, esAdmin)
             formularioEmpresa = EmpresaForm()
             formularioLocal = LocalForm()
             
@@ -139,7 +138,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
             formularioLocal.fields["locales"].choices = localesOpciones
             
             print(formularioLocal.fields["locales"].choices)
-            print(localesOpciones)
+            print(formularioEmpresa.is_valid())
             return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin})
         
         elif tipoContrato==TipoContrato.SERVICIO_EMPRESA.value.lower():
@@ -182,21 +181,18 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                 nuevaPersona = Persona()
                 nuevaEmpresa = Empresa(representante=nuevaPersona)
 
-                # Limpiamos datos obtenidos en los formularios
-                datosContratoBase = formularioBase.cleaned_data
-                datosEmpresa = formularioEmpresa.cleaned_data
-                datosLocal = formularioLocal.cleaned_data
+                asignaciones = {
+                    "formularioBase": formularioBase,
+                    "formularioEmpresa": formularioEmpresa,
+                    "formularioLocal": formularioLocal,
+                    "nuevoContratoBase": nuevoContratoBase,
+                    "nuevoContratoArrendamiento": nuevoContratoArrendamiento,
+                    "nuevaPersona": nuevaPersona,
+                    "nuevaEmpresa": nuevaEmpresa
+                }
 
-                # Guardar contrato base
-                guardarContratoBase(nuevoContratoBase, datosContratoBase)
+                asignacionContratoArrendamiento(**asignaciones)
 
-                # Guardar empresa y representante
-                guardarEmpresa(nuevaEmpresa, nuevaPersona, datosEmpresa)
-
-                # Guardar contrato de arrendamiento
-                guardarContratoArrendamiento(nuevoContratoArrendamiento, nuevaEmpresa, datosLocal)
-
-                
                 referer = request.META.get('HTTP_REFERER', reverse('home'))
                 return redirect('contratos') 
             else:
@@ -223,18 +219,18 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                 nuevaPersona = Persona()
                 nuevaEmpresa = Empresa(representante=nuevaPersona)
                 
-                # Limpiamos datos obtenidos en los formularios
-                datosContratoBase = formularioBase.cleaned_data
-                datosEmpresa = formularioEmpresa.cleaned_data
+                #TODO:
+                asignacion = {
+                    "formularioBase": formularioBase,
+                    "formularioEmpresa": formularioEmpresa,
+                    "nuevoContratoBase": nuevoContratoBase,
+                    "nuevoContratoServicio": nuevoContratoServicio,
+                    "nuevaPersona": nuevaPersona,
+                    "nuevaEmpresa": nuevaEmpresa
+                }
 
-                # Guardar contrato base
-                guardarContratoBase(nuevoContratoBase, datosContratoBase)
-
-                # Guardar empresa y representante
-                guardarEmpresa(nuevaEmpresa, nuevaPersona, datosEmpresa)
-
-                # Guardar contrato de arrendamiento
-                guardarContratoServicio(nuevoContratoServicio, nuevaEmpresa)
+                # Llamada al método con el diccionario de asignación
+                asignacionContratoPersonal(**asignacion)
 
                 referer = request.META.get('HTTP_REFERER', reverse('home'))
                 return redirect('contratos')             
@@ -265,14 +261,17 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                 nuevoDomicilio = Domicilio()
                 nuevoEmpleado = Empleado(persona=nuevaPersona, domicilio=nuevoDomicilio)
 
-                # Limpiamos datos obtenidos en los formularios
-                datosContratoBase = formularioBase.cleaned_data
-                datosEmpleado = formularioEmpleado.cleaned_data
-                
-                # Metodos de guardado
-                guardarContratoBase(nuevoContratoBase, datosContratoBase)
-                guardarEmpleado(nuevoEmpleado, nuevaPersona, nuevoDomicilio, datosEmpleado)
-                guardarContratoPersonal(nuevoContratoPersonal, nuevoEmpleado)
+                asignacion = {
+                    "formularioBase": formularioBase,
+                    "formularioEmpleado": formularioEmpleado,
+                    "nuevoContratoBase": nuevoContratoBase,
+                    "nuevoContratoPersonal": nuevoContratoPersonal,
+                    "nuevaPersona": nuevaPersona,
+                    "nuevoDomicilio": nuevoDomicilio,
+                    "nuevoEmpleado": nuevoEmpleado
+                }
+
+                asignacionContratoServicio(**asignacion)
 
                 referer = request.META.get('HTTP_REFERER', reverse('home'))
                 return redirect('contratos') 
@@ -312,15 +311,18 @@ def editarContrato(request, contratoId):
         if esAdmin:
             formularioBase.fields['vigente'].disabled = False    
         if contrato.tipo==TipoContrato.ARRENDAMIENTO_ARRENDAMIENTO.value:
-            print("ha llegado a "+ contrato.tipo)
-
 
             # Creamos formularios
             formularioEmpresa = EmpresaForm()
             formularioLocal = LocalForm()
+            
+            # Operaciones adicionales
+            locales = Local.objects.all()
+            localesOpciones = [(local.localId, local) for local in locales]
+            formularioLocal.fields["locales"].choices = localesOpciones
 
             # Definimos instancias 
-            actualContratoBase = contrato.contrato
+            actualContratoBase = contratoBase # todos
             actualContratoArrendamiento = contrato
             actualEmpresa = contrato.contratante
 
@@ -328,12 +330,36 @@ def editarContrato(request, contratoId):
             formularioEmpresa = definirCamposEmpresa(actualEmpresa, formularioEmpresa)
             formularioLocal = definirCamposContratoArrendamiento(actualContratoArrendamiento, formularioLocal)
 
+            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+
+
             if request.method == "GET":
                 return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin})
+            
             else:
-                if formularioBase.is_valid() and formularioEmpresa.is_valid() and formularioLocal.is_valid():
-                    test()
+                formularioBase = ContratoForm(request.POST)
+                formularioEmpresa = EmpresaForm(request.POST)
+                formularioLocal = LocalForm(request.POST)
 
+                # Control
+                formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+                formularioLocal.reserva = actualContratoArrendamiento.reserva
+                localesOpciones = [(local.localId, local) for local in locales]
+                formularioLocal.fields["locales"].choices = localesOpciones
+                
+                if formularioBase.is_valid() and formularioEmpresa.is_valid() and formularioLocal.is_valid():
+                    asignaciones = {
+                        "formularioBase": formularioBase,
+                        "formularioEmpresa": formularioEmpresa,
+                        "formularioLocal": formularioLocal,
+                        "nuevoContratoBase": actualContratoBase,
+                        "nuevoContratoArrendamiento": actualContratoArrendamiento,
+                        "nuevaPersona": actualEmpresa.representante,
+                        "nuevaEmpresa": actualEmpresa
+                    }
+
+                    asignacionContratoArrendamiento(**asignaciones)
+    
                     referer = request.META.get('HTTP_REFERER', reverse('home'))
                     return redirect('contratos') 
 

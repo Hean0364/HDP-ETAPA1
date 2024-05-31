@@ -81,6 +81,7 @@ def guardarEmpleado(empleadoModelo, personaModelo, domicilioModelo, datosEmplead
 
 def guardarContratoArrendamiento(contratoArrrendamientoModelo, empresaModelo, datosLocal):
     contratoArrrendamientoModelo.contratante = empresaModelo
+    
     contratoArrrendamientoModelo.reserva = Local.objects.get(localId=datosLocal["locales"])
     contratoArrrendamientoModelo.save()
 
@@ -103,10 +104,13 @@ def definirCamposContratoBase(contratoBaseModelo, contratoBaseFormulario):
         "vigente": contratoBaseModelo.vigente,
         "contenido": contratoBaseModelo.contenido
     }
+    # FIXME:
     contratoBaseFormulario.initial = datosContratoBase
+
     return contratoBaseFormulario
 
 def definirCamposEmpresa(empresaModelo, empresaFormulario):
+
     datosEmpresa = {
         "empresaNombre": empresaModelo.nombre,
         "representanteNombre": empresaModelo.representante.nombre,
@@ -132,7 +136,7 @@ def definirCamposEmpleado(empleadoModelo, empleadoFormulario):
 
 def definirCamposContratoArrendamiento(contratoArrrendamientoModelo, contratoArrendamientoFormulario):
     datosLocal = {
-        "locales": contratoArrrendamientoModelo.reserva.localId
+        "locales": contratoArrrendamientoModelo.reserva
     }
     contratoArrendamientoFormulario.initial = datosLocal
     return contratoArrendamientoFormulario
@@ -150,3 +154,43 @@ def definirCamposContratoPersonal(contratoPersonalModelo, contratoPersonalFormul
     }
     contratoPersonalFormulario.initial = datosContratoPersonal
     return contratoPersonalFormulario
+
+def asignacionContratoArrendamiento(formularioBase, formularioEmpresa, formularioLocal, nuevoContratoBase, nuevoContratoArrendamiento, nuevaPersona, nuevaEmpresa):
+    # Limpiamos datos obtenidos en los formularios
+    datosContratoBase = formularioBase.cleaned_data
+    datosEmpresa = formularioEmpresa.cleaned_data
+    datosLocal = formularioLocal.cleaned_data
+
+    # Guardar contrato base
+    guardarContratoBase(nuevoContratoBase, datosContratoBase)
+
+    # Guardar empresa y representante
+    guardarEmpresa(nuevaEmpresa, nuevaPersona, datosEmpresa)
+
+    # Guardar contrato de arrendamiento
+    guardarContratoArrendamiento(nuevoContratoArrendamiento, nuevaEmpresa, datosLocal)
+
+def asignacionContratoPersonal(formularioBase, formularioEmpresa, nuevoContratoBase, nuevoContratoServicio, nuevaPersona, nuevaEmpresa):
+    # Limpiamos datos obtenidos en los formularios
+    datosContratoBase = formularioBase.cleaned_data
+    datosEmpresa = formularioEmpresa.cleaned_data
+
+    # Guardar contrato base
+    guardarContratoBase(nuevoContratoBase, datosContratoBase)
+
+    # Guardar empresa y representante
+    guardarEmpresa(nuevaEmpresa, nuevaPersona, datosEmpresa)
+
+    # Guardar contrato de arrendamiento
+    guardarContratoServicio(nuevoContratoServicio, nuevaEmpresa)
+
+
+def asignacionContratoServicio(formularioBase, formularioEmpleado, nuevoContratoBase, nuevoContratoPersonal, nuevaPersona, nuevoDomicilio, nuevoEmpleado):
+    # Limpiamos datos obtenidos en los formularios
+    datosContratoBase = formularioBase.cleaned_data
+    datosEmpleado = formularioEmpleado.cleaned_data
+
+    # Metodos de guardado
+    guardarContratoBase(nuevoContratoBase, datosContratoBase)
+    guardarEmpleado(nuevoEmpleado, nuevaPersona, nuevoDomicilio, datosEmpleado)
+    guardarContratoPersonal(nuevoContratoPersonal, nuevoEmpleado)
