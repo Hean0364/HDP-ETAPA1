@@ -10,7 +10,7 @@ from .utils import contratoTipoDesdeContratoBase
 from GestionCentroComercial.utils import definirCamposContratoBase, definirCamposEmpresa, definirCamposEmpleado, definirCamposContratoArrendamiento, definirCamposContratoServicio, definirCamposContratoPersonal, asignacionContratoArrendamiento, asignacionContratoPersonal, asignacionContratoServicio
 
 def contratos(request):
-    return redirect(contratosArrendamiento)
+    return redirect('contratosArrendamiento')
 
 @requiereLogin
 def contratosArrendamiento(request):
@@ -194,7 +194,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                 asignacionContratoArrendamiento(**asignaciones)
 
                 referer = request.META.get('HTTP_REFERER', reverse('home'))
-                return redirect('contratos') 
+                return redirect('contratosArrendamiento') 
             else:
                 mensaje = "Alguno de los datos ingresados no son válidos."
                 return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "error":mensaje})
@@ -233,7 +233,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                 asignacionContratoPersonal(**asignacion)
 
                 referer = request.META.get('HTTP_REFERER', reverse('home'))
-                return redirect('contratos')             
+                return redirect('contratosServicio')             
             else:
                 mensaje = "Alguno de los datos ingresados no son válidos."
                 return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "error":mensaje})
@@ -271,10 +271,10 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                     "nuevoEmpleado": nuevoEmpleado
                 }
 
-                asignacionContratoServicio(**asignacion)
+                asignacionContratoPersonal(**asignacion)
 
                 referer = request.META.get('HTTP_REFERER', reverse('home'))
-                return redirect('contratos') 
+                return redirect('contratosPersonal') 
             else:
                 mensaje = "Alguno de los datos ingresados no son válidos."
                 return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin, "error":mensaje})
@@ -304,12 +304,12 @@ def editarContrato(request, contratoId):
     if not permisos:
         return redirect('contratos')        
     else:
-        print("LLego a Inicio Algoritmo")
         formularioBase = ContratoForm()
         print(contrato)
         # Metodos de control
         if esAdmin:
             formularioBase.fields['vigente'].disabled = False    
+        print(contrato.tipo)
         if contrato.tipo==TipoContrato.ARRENDAMIENTO_ARRENDAMIENTO.value:
 
             # Creamos formularios
@@ -361,21 +361,105 @@ def editarContrato(request, contratoId):
                     asignacionContratoArrendamiento(**asignaciones)
     
                     referer = request.META.get('HTTP_REFERER', reverse('home'))
-                    return redirect('contratos') 
+                    return redirect('contratosArrendamiento') 
 
                 else:
                     mensaje = "Alguno de los datos ingresados no son válidos."
                     return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "error":mensaje})
         
-        elif contrato.tipo==TipoContrato.EMPRESA.value:
-            # TODO:
-            test()
-
-
         elif contrato.tipo==TipoContrato.EMPLEADO.value:
-            # TODO:
-            test()
+            # Creamos formularios
+            formularioEmpleado = EmpleadoForm()
+            
+            # Operaciones adicionales
 
+            # Definimos instancias 
+            actualContratoBase = contratoBase # todos
+            actualContratoPersonal = contrato
+            actualEmpleado = contrato.contratante
+
+            # Llenamos formularios
+            formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
+            formularioEmpleado = definirCamposEmpleado(actualEmpleado, formularioEmpleado)
+
+            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+            
+            if request.method == "GET":
+                return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin})
+            else:
+                formularioBase = ContratoForm(request.POST)
+                formularioEmpleado = EmpleadoForm(request.POST)
+
+                # Control
+                formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+
+                if formularioBase.is_valid() and formularioEmpleado.is_valid():
+                    # Diccionario de asignación
+                    asignacion = {
+                        "formularioBase": formularioBase,
+                        "formularioEmpleado": formularioEmpleado,
+                        "nuevoContratoBase": actualContratoBase,
+                        "nuevoContratoPersonal": actualContratoPersonal,
+                        "nuevaPersona": actualEmpleado.persona,
+                        "nuevoDomicilio": actualEmpleado.domicilio,
+                        "nuevoEmpleado": actualEmpleado
+                    }
+
+                    asignacionContratoPersonal(**asignacion)
+
+                    return redirect('contratosPersonal') 
+                else:
+                    mensaje = "Alguno de los datos ingresados no son válidos."
+                    return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin, "error":mensaje})
+
+        elif contrato.tipo==TipoContrato.EMPRESA.value:
+
+            # Creamos formularios
+            formularioEmpresa = EmpresaForm()
+            
+            # Operaciones adicionales
+
+            # Definimos instancias 
+            actualContratoBase = contratoBase # todos
+            actualContratoServicio = contrato
+            actualEmpresa = contrato.contratante
+
+            formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
+            formularioEmpresa = definirCamposEmpresa(actualEmpresa, formularioEmpresa)
+
+            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+
+            if request.method == "GET":
+                return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin})
+            
+            else:
+                formularioBase = ContratoForm(request.POST)
+                formularioEmpresa = EmpresaForm(request.POST)
+
+                # Control
+                formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+
+                if formularioBase.is_valid() and formularioEmpresa.is_valid():
+                    #TODO:
+                    asignacion = {
+                        "formularioBase": formularioBase,
+                        "formularioEmpresa": formularioEmpresa,
+                        "nuevoContratoBase": actualContratoBase,
+                        "nuevoContratoServicio": actualContratoServicio,
+                        "nuevaPersona": actualEmpresa.representante,
+                        "nuevaEmpresa": actualEmpresa
+                    }
+
+                    # Llamada al método con el diccionario de asignación
+                    asignacionContratoServicio(**asignacion)
+    
+                    referer = request.META.get('HTTP_REFERER', reverse('home'))
+                    return redirect('contratosServicio') 
+
+                else:
+                    mensaje = "Alguno de los datos ingresados no son válidos."
+                    return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "error":mensaje})
+        
         else:
             return HttpResponse("Error inesperado.")
 

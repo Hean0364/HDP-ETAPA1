@@ -170,7 +170,7 @@ def asignacionContratoArrendamiento(formularioBase, formularioEmpresa, formulari
     # Guardar contrato de arrendamiento
     guardarContratoArrendamiento(nuevoContratoArrendamiento, nuevaEmpresa, datosLocal)
 
-def asignacionContratoPersonal(formularioBase, formularioEmpresa, nuevoContratoBase, nuevoContratoServicio, nuevaPersona, nuevaEmpresa):
+def asignacionContratoServicio(formularioBase, formularioEmpresa, nuevoContratoBase, nuevoContratoServicio, nuevaPersona, nuevaEmpresa):
     # Limpiamos datos obtenidos en los formularios
     datosContratoBase = formularioBase.cleaned_data
     datosEmpresa = formularioEmpresa.cleaned_data
@@ -185,7 +185,7 @@ def asignacionContratoPersonal(formularioBase, formularioEmpresa, nuevoContratoB
     guardarContratoServicio(nuevoContratoServicio, nuevaEmpresa)
 
 
-def asignacionContratoServicio(formularioBase, formularioEmpleado, nuevoContratoBase, nuevoContratoPersonal, nuevaPersona, nuevoDomicilio, nuevoEmpleado):
+def asignacionContratoPersonal(formularioBase, formularioEmpleado, nuevoContratoBase, nuevoContratoPersonal, nuevaPersona, nuevoDomicilio, nuevoEmpleado):
     # Limpiamos datos obtenidos en los formularios
     datosContratoBase = formularioBase.cleaned_data
     datosEmpleado = formularioEmpleado.cleaned_data
