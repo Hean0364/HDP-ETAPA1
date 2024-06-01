@@ -194,3 +194,9 @@ def asignacionContratoPersonal(formularioBase, formularioEmpleado, nuevoContrato
     guardarContratoBase(nuevoContratoBase, datosContratoBase)
     guardarEmpleado(nuevoEmpleado, nuevaPersona, nuevoDomicilio, datosEmpleado)
     guardarContratoPersonal(nuevoContratoPersonal, nuevoEmpleado)
+
+def hacerFormularioReadonly(formulario):
+    for field in formulario.fields.values():
+        field.widget.attrs['readonly'] = True
+        field.widget.attrs['disabled'] = True  # Opcional
+    return formulario

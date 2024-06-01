@@ -5,7 +5,7 @@ from .forms import FiltroContratosForm, ContratoForm, EmpleadoForm, EmpresaForm,
 from django.http import HttpResponse
 from .models import Contrato, ContratoArrendamiento, ContratoEmpleado, ContratoEmpresa
 from Sistema.models import Empresa, Empleado, Local, Persona, Domicilio
-from GestionCentroComercial.utils import TipoContrato, checkAdmin, requiereLogin, requiereAdmin, guardarContratoBase, guardarContratoArrendamiento, guardarEmpresa, test,guardarEmpleado,guardarContratoServicio,guardarContratoPersonal
+from GestionCentroComercial.utils import TipoContrato, checkAdmin, requiereLogin, requiereAdmin, guardarContratoBase, guardarContratoArrendamiento, guardarEmpresa, test,guardarEmpleado,guardarContratoServicio,guardarContratoPersonal, hacerFormularioReadonly
 from .utils import contratoTipoDesdeContratoBase
 from GestionCentroComercial.utils import definirCamposContratoBase, definirCamposEmpresa, definirCamposEmpleado, definirCamposContratoArrendamiento, definirCamposContratoServicio, definirCamposContratoPersonal, asignacionContratoArrendamiento, asignacionContratoPersonal, asignacionContratoServicio
 
@@ -471,8 +471,111 @@ def editarContrato(request, contratoId):
 # SIN IMPLEMENTAR
 @requiereLogin
 def verContrato(request, contratoId):
-    mensaje = f"Esta vista muestra el contrato con ID {contratoId}."
-    return HttpResponse(mensaje)
+    # Validar permiso de acceso
+    esAdmin = checkAdmin(request)
+    
+    # Obtener Contrato por contratoId
+    try:
+        contratoBase = Contrato.objects.get(contratoId=contratoId)
+        # TsODO: eliminar este comentario 
+        contrato = contratoTipoDesdeContratoBase(contratoBase)
+
+        #contrato = ContratoArrendamiento()
+    except:
+        return redirect('contratos')
+    
+    permisos = True
+
+    if not permisos:
+        return redirect('contratos')        
+    else:
+        formularioBase = ContratoForm()
+        print(contrato)
+        # Metodos de control
+        if esAdmin:
+            formularioBase.fields['vigente'].disabled = False    
+        print(contrato.tipo)
+        if contrato.tipo==TipoContrato.ARRENDAMIENTO_ARRENDAMIENTO.value:
+
+            # Creamos formularios
+            formularioEmpresa = EmpresaForm()
+            formularioLocal = LocalForm()
+            
+            # Operaciones adicionales
+            locales = Local.objects.all()
+            localesOpciones = [(local.localId, local) for local in locales]
+            formularioLocal.fields["locales"].choices = localesOpciones
+
+            # Definimos instancias 
+            actualContratoBase = contratoBase # todos
+            actualContratoArrendamiento = contrato
+            actualEmpresa = contrato.contratante
+
+            formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
+            formularioEmpresa = definirCamposEmpresa(actualEmpresa, formularioEmpresa)
+            formularioLocal = definirCamposContratoArrendamiento(actualContratoArrendamiento, formularioLocal)
+
+            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+
+            formularioBase = hacerFormularioReadonly(formularioBase)
+            formularioEmpresa = hacerFormularioReadonly(formularioEmpresa)
+            formularioLocal = hacerFormularioReadonly(formularioLocal)
+
+            if request.method == "GET":
+                return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "readOnly":True})
+            
+
+        elif contrato.tipo==TipoContrato.EMPLEADO.value:
+            # Creamos formularios
+            formularioEmpleado = EmpleadoForm()
+            
+            # Operaciones adicionales
+
+            # Definimos instancias 
+            actualContratoBase = contratoBase # todos
+            actualContratoPersonal = contrato
+            actualEmpleado = contrato.contratante
+
+            # Llenamos formularios
+            formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
+            formularioEmpleado = definirCamposEmpleado(actualEmpleado, formularioEmpleado)
+
+            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+
+            formularioBase = hacerFormularioReadonly(formularioBase)
+            formularioEmpleado = hacerFormularioReadonly(formularioEmpleado)
+
+            if request.method == "GET":
+                return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin, "readOnly":True})
+
+        elif contrato.tipo==TipoContrato.EMPRESA.value:
+
+            # Creamos formularios
+            formularioEmpresa = EmpresaForm()
+            
+            # Operaciones adicionales
+
+            # Definimos instancias 
+            actualContratoBase = contratoBase # todos
+            actualContratoServicio = contrato
+            actualEmpresa = contrato.contratante
+
+            formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
+            formularioEmpresa = definirCamposEmpresa(actualEmpresa, formularioEmpresa)
+
+            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+
+            formularioBase = hacerFormularioReadonly(formularioBase)
+            formularioEmpresa = hacerFormularioReadonly(formularioEmpresa)
+
+            if request.method == "GET":
+                return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "readOnly":True})
+            
+    
+        else:
+            return HttpResponse("Error inesperado.")
+
+
 
 @requiereLogin
 @requiereAdmin

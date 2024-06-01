@@ -20,9 +20,14 @@
         {% if error %}
         <p style="color: red;"><strong>{{error}}</strong></p>
         {% endif %}
-        <button>
+        
+        {% if not readOnly %}
+        <button>    
             Guardar Contrato
         </button>
+        {% endif %}
+
+
 </form> 
 
 {% endblock %}
