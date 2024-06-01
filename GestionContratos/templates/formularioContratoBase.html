@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% comment %}
+    Esta vista recibe: form, error
+{% endcomment %}
+
+
+{% block title %}Formulario Contrato{% endblock %}
+
+{% block head %}
+{% endblock %}
+{% block content %}
+
+<form method="POST">
+    {% csrf_token %} 
+    
+        {{formBase.as_p}}
+        {% block formularioContratoBase %}{% endblock %}
+
+        {% if error %}
+        <p style="color: red;"><strong>{{error}}</strong></p>
+        {% endif %}
+        
+        {% if not readOnly %}
+        <button>    
+            Guardar Contrato
+        </button>
+        {% endif %}
+
+
+</form> 
+
+{% endblock %}

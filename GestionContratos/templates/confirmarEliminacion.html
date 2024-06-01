@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% comment %}
+    Hola
+{% endcomment %}
+
+
+{% block title %}Confirmar Eliminacion{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+<h1>Confirmar Eliminación</h1>
+{% if mensajeExito %}
+<p>Éxito al Borrar</p>
+{% else %}
+<p>¿Seguro que deseas eliminar el contrato {{ objeto.id }} de {{ objeto.tipo }} hecho por {{ objeto.contratista }}?</p>
+{% endif %}
+
+<!-- Mostrar mensaje de error si existe -->
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}    
+    {% if not mensajeExito %}
+    <button type="submit">Confirmar</button>
+    {% endif %}
+    <a href="{% url 'contratos' %}">Volver</a> 
+</form>
+{% endblock %}

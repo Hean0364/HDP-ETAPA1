@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% comment %}
+    Esta vista recibe: form, error
+{% endcomment %}
+
+
+{% block title %}Contratos Arrendamiento{% endblock %}
+
+{% block head %}
+{% endblock %}
+{% block content %}
+    <h1>Contratos</h1>
+    <!-- Filtro -->
+    <nav>
+        <ul>
+            <li><a href="{% url 'contratosArrendamiento' %}">Arrendamiento</a></li>
+            <li><a href="{% url 'contratosServicio' %}">Servicio</a></li>
+            <li><a href="{% url 'contratosPersonal' %}">Personal</a></li>
+
+            </div>
+        </ul>
+    </nav>
+    
+    <a href="{{ request.path }}crear/">Nuevo Contrato</a>
+
+    <h2>Filtrar</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{form}}
+        <button>
+            Filtrar
+        </button>
+    </form> 
+    
+    <!-- Consulta Contratos -->
+
+    <table>
+        <thead>
+            <tr>
+                <th>Contrato</th>
+                <th>Tipo</th>
+                <th>Contratante</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for contrato in contratos %}
+            <tr>
+                <td>{{ contrato.contrato.contratoId }}</td>
+                <td>{{ contrato.tipo }}</td>
+                {% if contrato.tipo == "Empresa" or contrato.tipo == "Arrendamiento" %}
+                <td>{{ contrato.contratante.nombre }}</td>
+                {% else %}
+                <td>{{ contrato.contratante.persona.nombre }}</td>
+                {% endif %}
+                <td>{{ contrato.contrato.fechaInicio }}</td> 
+                <td>{{ contrato.contrato.fechaFin }}</td>
+                <td>{{ contrato.contrato.vigente }}</td>
+                <td>
+                    <a href="{% url 'verContrato' contrato.contrato.contratoId %}">Ver</a>
+                    {% if esAdministrador %}
+                        {% if contrato.contrato.vigente %}
+                            <a href="{% url 'desaprobarContrato' contrato.contrato.contratoId %}">Desaprobar</a>
+                        {% else %}
+                            <a href="{% url 'aprobarContrato' contrato.contrato.contratoId %}">Aprobar</a>
+                        {% endif %}
+                    {% endif %}
+                    {% if contrato.contrato.contratista.user == user and not esAdministrador %}
+                        <a href="{% url 'editarContrato' contrato.contrato.contratoId %}">Editar</a>
+                    {% endif %}
+
+                    {% if esAdministrador %}
+                        <a href="{% url 'editarContrato' contrato.contrato.contratoId %}">Editar</a>
+                        <a href="{% url 'eliminarContrato' contrato.contrato.contratoId %}">Eliminar</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
