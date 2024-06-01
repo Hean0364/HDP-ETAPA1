@@ -7,20 +7,22 @@ from Sistema.models import Empleado, Persona, Empresa, Domicilio
 class FiltroContratosForm(forms.Form):
     desde = forms.DateField(label='Desde', required=False, widget=forms.DateInput(attrs={'class': 'datepicker'}))
     hasta = forms.DateField(label='Hasta', required=False, widget=forms.DateInput(attrs={'class': 'datepicker'}))
-    contratante = forms.ChoiceField(label='Contratante', choices=[], required=False)
-    vigencia = forms.ChoiceField(label='Estado de vigencia', choices=[('', 'Todos'), (True, 'Vigentes'), (False, 'No Vigentes')], required=False)
+    #contratante = forms.ChoiceField(label='Contratante', choices=[], required=False)
+    contratante = forms.CharField(label='Contratante', max_length=100, required=False) 
+    vigencia = forms.ChoiceField(label='Estado de aprobación', choices=[('', 'Todos'), (True, 'Aprobados'), (False, 'No Aprobados')], required=False)
 
 # ******************************
 
 class EmpleadoForm(forms.Form):
     nombre = forms.CharField(max_length=50)
     apellido = forms.CharField(max_length=50)
-    dui = forms.CharField(max_length=10)
+    dui = forms.IntegerField(widget=forms.TextInput(attrs={'maxlength': '9'}))
     profesion = forms.CharField(max_length=50)
     pais = forms.CharField(max_length=50)
     departamento = forms.CharField(max_length=50)
     ciudad = forms.CharField(max_length=50)
     direccion = forms.CharField(max_length=100)
+    informacionAdicional = forms.CharField(widget=forms.Textarea, label="Información adicional", required=False)
 
 class EmpresaForm(forms.Form):
     empresaNombre = forms.CharField(max_length=100, label="Nombre de la Empresa")
@@ -33,7 +35,7 @@ class ContratoForm(forms.Form):
     fechaInicio = forms.DateField(label="Fecha de Inicio", widget=forms.DateInput(attrs={'class': 'datepicker'}))
     fechaFin = forms.DateField(label="Fecha de Fin", widget=forms.DateInput(attrs={'class': 'datepicker'}))
     vigente = forms.BooleanField(initial=False, required=False, disabled=True, label="Vigente")
-    contenido = forms.CharField(widget=forms.Textarea, label="Contenido")
+    contenido = forms.CharField(widget=forms.Textarea, label="Contenido del contrato")
     
     def clean(self):
         cleaned_data = super().clean()
@@ -47,4 +49,4 @@ class ContratoForm(forms.Form):
 
 
 class LocalForm(forms.Form):
-    locales = forms.ChoiceField(label='Local', choices=[], required=False)
+    locales = forms.ChoiceField(label='Local', choices=[])

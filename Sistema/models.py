@@ -21,7 +21,8 @@ class Empleado(models.Model):
     persona = models.OneToOneField(Persona, on_delete=models.CASCADE)
     profesion = models.CharField(max_length=100)
     domicilio = models.ForeignKey('Domicilio', on_delete=models.CASCADE)
-    respondeEconomicamentePor = models.ManyToManyField('Persona', related_name='responsableEconomico', blank=True, null=True)
+    informacionAdicional = models.TextField(blank=True, null=True)
+    #respondeEconomicamentePor = models.ManyToManyField('Persona', related_name='responsableEconomico', blank=True, null=True)
 
     def __str__(self):
         return f"Empleado {self.empleadoId} - {self.persona.nombre} {self.persona.apellido}"
@@ -32,14 +33,14 @@ class Local(models.Model):
     localId = models.AutoField(primary_key=True)
     # empresa = models.ForeignKey('Empresa', on_delete=models.PROTECT, blank=True, null=True)
     # nombre = models.CharField(max_length=100)
-    estado = models.CharField(max_length=50)
+    # estado = models.CharField(max_length=50)
     tamanio = models.DecimalField(max_digits=5, decimal_places=2)
     ubicacion = models.CharField(max_length=100)
-    disponible = models.BooleanField(default=True)
+    #disponible = models.BooleanField(default=True)
     descripcion = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Local {self.localId} - {self.ubicacion} - {self.estado}"
+        return f"Local {self.localId} - {self.ubicacion} - {self.descripcion}"
 
 # Modelo: Empresa
 class Empresa(models.Model):
@@ -59,3 +60,6 @@ class Domicilio(models.Model):
 
     def __str__(self):
         return f"Domicilio {self.direccion}, {self.ciudad}, {self.pais}"
+    
+
+    

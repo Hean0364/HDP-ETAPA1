@@ -16,14 +16,16 @@ class Contrato(models.Model):
     def __str__(self):
         return f"Contrato {self.contratoId}"
 
+
 # Modelo: ContratoEmpleado
 class ContratoEmpleado(models.Model):
     contrato = models.OneToOneField(Contrato, on_delete=models.CASCADE, related_name='contratoEmpleadoDetalle') # contrato del que deriva
-    contratante = models.ForeignKey('Sistema.Empleado', on_delete=models.PROTECT, related_name='contratosEmpleado')
+    contratante = models.ForeignKey('Sistema.Empleado', on_delete=models.CASCADE, related_name='contratosEmpleado')
     tipo = models.CharField(max_length=20, default=TipoContrato.EMPLEADO.value, editable=False)
 
     def __str__(self):
         return f"ContratoEmpleado {self.contrato.contratoId} - Empleado {self.contratante.persona.nombre} - ContratoID {self.contrato.contratoId}"
+
 
 # Modelo: ContratoEmpresa
 class ContratoEmpresa(models.Model):

@@ -14,109 +14,101 @@ def contratos(request):
 
 @requiereLogin
 def contratosArrendamiento(request):
-        # Obtener empresas para añadirlo al formulario
-        empresas = Empresa.objects.all()
 
-        contratanteOpciones = [(None, 'Todos')]  # Opción manual 'Todos'
-        contratanteOpciones += [(empresa.empresaId, empresa.nombre) for empresa in empresas]
+    # Obtener todos los contratos de arrendamiento
+    contratosA = ContratoArrendamiento.objects.all().order_by('-id')
 
-        # Obtener todos los contratos de arrendamiento
-        contratosA = ContratoArrendamiento.objects.all()
+    # Crear el formulario
+    form = FiltroContratosForm(request.POST or None)
 
-        # Crear el formulario y asignar opciones al campo contratante
-        form = FiltroContratosForm(request.POST)
-        form.fields["contratante"].choices = contratanteOpciones
+    if request.method == "POST" and form.is_valid():
+        desde = form.cleaned_data["desde"]
+        hasta = form.cleaned_data["hasta"]
+        contratante = form.cleaned_data["contratante"]
+        vigencia = form.cleaned_data["vigencia"]
 
-        if request.method == "POST":
-            if form.is_valid():
-                desde = form.cleaned_data["desde"]
-                hasta = form.cleaned_data["hasta"]
-                contratante = form.cleaned_data["contratante"]
-                vigencia = form.cleaned_data["vigencia"]
-                
-                # Aplicamos filtros
+        # Aplicar filtros
+        if desde:
+            contratosA = contratosA.filter(contrato__fechaInicio__gte=desde)
+        if hasta:
+            contratosA = contratosA.filter(contrato__fechaFin__lte=hasta)
+        if contratante:
+            contratosA = contratosA.filter(contratante__nombre__icontains=contratante)
+        if vigencia != "":
+            contratosA = contratosA.filter(contrato__vigente=vigencia)
 
-                if desde:
-                    contratosA = contratosA.filter(contrato__fechaInicio__gte=desde)
-                if hasta:
-                    contratosA = contratosA.filter(contrato__fechaFin__lte=hasta)
-                if contratante:
-                    contratosA = contratosA.filter(contratante__empresaId=contratante)
-                if vigencia != "":
-                    contratosA = contratosA.filter(contrato__vigente = vigencia)
-
-        return render(request, "contratosBase.html", {"contratos": contratosA, "form": form,'esAdministrador': checkAdmin(request), "userActual":request.user})
+    return render(request, "contratosBase.html", {
+        "contratos": contratosA,
+        "form": form,
+        'esAdministrador': checkAdmin(request),
+        "userActual": request.user
+    })
 
 @requiereLogin
 def contratosServicio(request):
-        # Obtener empresas para añadirlo al formulario
-        empresas = Empresa.objects.all()
+    # Obtener todas las empresas para añadirlo al formulario
 
-        contratanteOpciones = [(None, 'Todos')]  # Opción manual 'Todos'
-        contratanteOpciones += [(empresa.empresaId, empresa.nombre) for empresa in empresas]
+    # Obtener todos los contratos de servicio
+    contratosA = ContratoEmpresa.objects.all().order_by('-id')
 
-        # Obtener todos los contratos de arrendamiento
-        contratosA = ContratoEmpresa.objects.all()
+    # Crear el formulario
+    form = FiltroContratosForm(request.POST or None)
 
-        # Crear el formulario y asignar opciones al campo contratante
-        form = FiltroContratosForm(request.POST)
-        form.fields["contratante"].choices = contratanteOpciones
+    if request.method == "POST" and form.is_valid():
+        desde = form.cleaned_data["desde"]
+        hasta = form.cleaned_data["hasta"]
+        contratante = form.cleaned_data["contratante"]
+        vigencia = form.cleaned_data["vigencia"]
 
-        if request.method == "POST":
-            if form.is_valid():
-                desde = form.cleaned_data["desde"]
-                hasta = form.cleaned_data["hasta"]
-                contratante = form.cleaned_data["contratante"]
-                vigencia = form.cleaned_data["vigencia"]
-                
-                # Aplicamos filtros
+        # Aplicar filtros
+        if desde:
+            contratosA = contratosA.filter(contrato__fechaInicio__gte=desde)
+        if hasta:
+            contratosA = contratosA.filter(contrato__fechaFin__lte=hasta)
+        if contratante:
+            contratosA = contratosA.filter(contratante__nombre__icontains=contratante)
+        if vigencia != "":
+            contratosA = contratosA.filter(contrato__vigente=vigencia)
 
-                if desde:
-                    contratosA = contratosA.filter(contrato__fechaInicio__gte=desde)
-                if hasta:
-                    contratosA = contratosA.filter(contrato__fechaFin__lte=hasta)
-                if contratante:
-                    contratosA = contratosA.filter(contratante__empresaId=contratante)
-                if vigencia != "":
-                    contratosA = contratosA.filter(contrato__vigente = vigencia)
-
-        return render(request, "contratosBase.html", {"contratos": contratosA, "form": form,'esAdministrador': checkAdmin(request), "userActual":request.user})
+    return render(request, "contratosBase.html", {
+        "contratos": contratosA,
+        "form": form,
+        'esAdministrador': checkAdmin(request),
+        "userActual": request.user
+    })
 
 @requiereLogin
 def contratosPersonal(request):
-        # Obtener empresas para añadirlo al formulario
-        empleados = Empleado.objects.all()
+    
+    # Obtener todos los contratos de personal
+    contratosA = ContratoEmpleado.objects.all().order_by('-id')
 
-        contratanteOpciones = [(None, 'Todos')]  # Opción manual 'Todos'
-        contratanteOpciones += [(empleado.empleadoId, empleado.persona.nombre) for empleado in empleados]
+    # Crear el formulario
+    form = FiltroContratosForm(request.POST or None)
 
-        # Obtener todos los contratos de arrendamiento
-        contratosA = ContratoEmpleado.objects.all()
+    if request.method == "POST" and form.is_valid():
+        desde = form.cleaned_data["desde"]
+        hasta = form.cleaned_data["hasta"]
+        contratante = form.cleaned_data["contratante"]
+        vigencia = form.cleaned_data["vigencia"]
 
-        # Crear el formulario y asignar opciones al campo contratante
-        form = FiltroContratosForm(request.POST)
-        form.fields["contratante"].choices = contratanteOpciones
+        # Aplicar filtros
+        if desde:
+            contratosA = contratosA.filter(contrato__fechaInicio__gte=desde)
+        if hasta:
+            contratosA = contratosA.filter(contrato__fechaFin__lte=hasta)
+        if contratante:
+            contratosA = contratosA.filter(contratante__persona__nombre__icontains=contratante)
+        if vigencia != "":
+            contratosA = contratosA.filter(contrato__vigente=vigencia)
+    
 
-        if request.method == "POST":
-            if form.is_valid():
-                desde = form.cleaned_data["desde"]
-                hasta = form.cleaned_data["hasta"]
-                contratante = form.cleaned_data["contratante"]
-                vigencia = form.cleaned_data["vigencia"]
-                
-                # Aplicamos filtros
-
-                if desde:
-                    contratosA = contratosA.filter(contrato__fechaInicio__gte=desde)
-                if hasta:
-                    contratosA = contratosA.filter(contrato__fechaFin__lte=hasta)
-                if contratante:
-                    contratosA = contratosA.filter(contratante__empleadoId=contratante)
-                if vigencia != "":
-                    contratosA = contratosA.filter(contrato__vigente = vigencia)
-
-        return render(request, "contratosBase.html", {"contratos": contratosA, "form": form,'esAdministrador': checkAdmin(request), "userActual":request.user})
-
+    return render(request, "contratosBase.html", {
+        "contratos": contratosA,
+        "form": form,
+        'esAdministrador': checkAdmin(request),
+        "userActual": request.user
+    })
 @requiereLogin
 def nuevoContrato(request, tipoContrato="arrendamiento"):
     esAdmin = checkAdmin(request)
@@ -230,7 +222,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                 }
 
                 # Llamada al método con el diccionario de asignación
-                asignacionContratoPersonal(**asignacion)
+                asignacionContratoServicio(**asignacion)
 
                 referer = request.META.get('HTTP_REFERER', reverse('home'))
                 return redirect('contratosServicio')             
@@ -524,7 +516,6 @@ def verContrato(request, contratoId):
             if request.method == "GET":
                 return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "readOnly":True})
             
-
         elif contrato.tipo==TipoContrato.EMPLEADO.value:
             # Creamos formularios
             formularioEmpleado = EmpleadoForm()
@@ -571,7 +562,6 @@ def verContrato(request, contratoId):
             if request.method == "GET":
                 return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "readOnly":True})
             
-    
         else:
             return HttpResponse("Error inesperado.")
 
@@ -619,7 +609,16 @@ def eliminarContrato(request, contratoId):
     
     else:  # Significa que se recibe una solicitud "POST" confirmando la eliminación
         try:
-            contrato.delete()  # Elimina el contrato de la base de datos
+            if contrato.tipo==TipoContrato.ARRENDAMIENTO_ARRENDAMIENTO.value:
+                # Elimina el contrato de la base de datos
+                test()
+            elif contrato.tipo==TipoContrato.EMPLEADO.value:
+                test()
+            elif contrato.tipo==TipoContrato.EMPRESA.value:
+                test()
+            else:
+                raise  Exception("Contrato no coincide con su definición.")
+            contratoBase.delete()
             exito = True
             return render(request, 'confirmarEliminacion.html', {'objeto': contrato, "mensajeExito": exito, 'esAdministrador': True})
 

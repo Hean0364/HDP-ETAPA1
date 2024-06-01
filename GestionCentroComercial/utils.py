@@ -74,6 +74,7 @@ def guardarEmpleado(empleadoModelo, personaModelo, domicilioModelo, datosEmplead
         empleadoModelo.domicilio.departamento = datosEmpleado["departamento"]
 
         empleadoModelo.profesion  = datosEmpleado["profesion"]
+        empleadoModelo.informacionAdicional = datosEmpleado["informacionAdicional"] #reciente
 
         domicilioModelo.save()
         personaModelo.save()
@@ -129,7 +130,8 @@ def definirCamposEmpleado(empleadoModelo, empleadoFormulario):
         "direccion": empleadoModelo.domicilio.direccion,
         "pais": empleadoModelo.domicilio.pais,
         "departamento": empleadoModelo.domicilio.departamento,
-        "profesion": empleadoModelo.profesion
+        "profesion": empleadoModelo.profesion,
+        "informacionAdicional": empleadoModelo.informacionAdicional,
     }
     empleadoFormulario.initial = datosEmpleado
     return empleadoFormulario
