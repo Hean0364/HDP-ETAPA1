@@ -119,7 +119,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
         if esAdmin:
             formularioBase.fields['vigente'].disabled = False
 
-        formularioBase.fields['contratista'].initial = Empleado.objects.get(user=request.user)
+        formularioBase.fields['contratador'].initial = Empleado.objects.get(user=request.user)
 
         if tipoContrato==TipoContrato.ARRENDAMIENTO_ARRENDAMIENTO.value.lower():
             formularioEmpresa = EmpresaForm()
@@ -157,7 +157,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
             if esAdmin:
                 formularioBase.fields['vigente'].disabled = False
 
-            formularioBase.fields['contratista'].initial = Empleado.objects.get(user=request.user)
+            formularioBase.fields['contratador'].initial = Empleado.objects.get(user=request.user)
 
             locales = Local.objects.all()
             localesOpciones = [(local.localId, local) for local in locales]
@@ -181,6 +181,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                     "nuevoContratoArrendamiento": nuevoContratoArrendamiento,
                     "nuevaPersona": nuevaPersona,
                     "nuevaEmpresa": nuevaEmpresa
+
                 }
 
                 asignacionContratoArrendamiento(**asignaciones)
@@ -202,7 +203,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
             if esAdmin:
                 formularioBase.fields['vigente'].disabled = False
 
-            formularioBase.fields['contratista'].initial = Empleado.objects.get(user=request.user)
+            formularioBase.fields['contratador'].initial = Empleado.objects.get(user=request.user)
 
             if formularioBase.is_valid() and formularioEmpresa.is_valid():
                 # Modelo contrato particular
@@ -242,7 +243,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
             if esAdmin:
                 formularioBase.fields['vigente'].disabled = False
 
-            formularioBase.fields['contratista'].initial = Empleado.objects.get(user=request.user)
+            formularioBase.fields['contratador'].initial = Empleado.objects.get(user=request.user)
             
             # Datos del contrato particular
             if formularioBase.is_valid() and formularioEmpleado.is_valid():
@@ -292,7 +293,7 @@ def editarContrato(request, contratoId):
     except:
         return redirect('contratos')
 
-    permisos = esAdmin or contratoBase.contratista.user == request.user
+    permisos = esAdmin or contratoBase.contratador.user == request.user
     if not permisos:
         return redirect('contratos')        
     else:
@@ -322,7 +323,7 @@ def editarContrato(request, contratoId):
             formularioEmpresa = definirCamposEmpresa(actualEmpresa, formularioEmpresa)
             formularioLocal = definirCamposContratoArrendamiento(actualContratoArrendamiento, formularioLocal)
 
-            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+            formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
 
             if request.method == "GET":
@@ -334,7 +335,7 @@ def editarContrato(request, contratoId):
                 formularioLocal = LocalForm(request.POST)
 
                 # Control
-                formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+                formularioBase.fields["contratador"].initial = actualContratoBase.contratador
                 formularioLocal.reserva = actualContratoArrendamiento.reserva
                 localesOpciones = [(local.localId, local) for local in locales]
                 formularioLocal.fields["locales"].choices = localesOpciones
@@ -374,7 +375,7 @@ def editarContrato(request, contratoId):
             formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
             formularioEmpleado = definirCamposEmpleado(actualEmpleado, formularioEmpleado)
 
-            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+            formularioBase.fields["contratador"].initial = actualContratoBase.contratador
             
             if request.method == "GET":
                 return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin, "titulo": "Editar contrato"})
@@ -383,7 +384,7 @@ def editarContrato(request, contratoId):
                 formularioEmpleado = EmpleadoForm(request.POST)
 
                 # Control
-                formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+                formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
                 if formularioBase.is_valid() and formularioEmpleado.is_valid():
                     # Diccionario de asignación
@@ -419,7 +420,7 @@ def editarContrato(request, contratoId):
             formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
             formularioEmpresa = definirCamposEmpresa(actualEmpresa, formularioEmpresa)
 
-            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+            formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
             if request.method == "GET":
                 return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "titulo": "Editar contrato"})
@@ -429,7 +430,7 @@ def editarContrato(request, contratoId):
                 formularioEmpresa = EmpresaForm(request.POST)
 
                 # Control
-                formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+                formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
                 if formularioBase.is_valid() and formularioEmpresa.is_valid():
                     #TODO:
@@ -507,7 +508,7 @@ def verContrato(request, contratoId):
             formularioEmpresa = definirCamposEmpresa(actualEmpresa, formularioEmpresa)
             formularioLocal = definirCamposContratoArrendamiento(actualContratoArrendamiento, formularioLocal)
 
-            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+            formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
             formularioBase = hacerFormularioReadonly(formularioBase)
             formularioEmpresa = hacerFormularioReadonly(formularioEmpresa)
@@ -531,7 +532,7 @@ def verContrato(request, contratoId):
             formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
             formularioEmpleado = definirCamposEmpleado(actualEmpleado, formularioEmpleado)
 
-            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+            formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
             formularioBase = hacerFormularioReadonly(formularioBase)
             formularioEmpleado = hacerFormularioReadonly(formularioEmpleado)
@@ -554,7 +555,7 @@ def verContrato(request, contratoId):
             formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
             formularioEmpresa = definirCamposEmpresa(actualEmpresa, formularioEmpresa)
 
-            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+            formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
             formularioBase = hacerFormularioReadonly(formularioBase)
             formularioEmpresa = hacerFormularioReadonly(formularioEmpresa)

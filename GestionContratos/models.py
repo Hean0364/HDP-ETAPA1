@@ -11,7 +11,7 @@ class Contrato(models.Model):
     fechaFin = models.DateField(null=True)
     vigente = models.BooleanField()
     contenido = models.TextField()
-    contratista = models.ForeignKey('Sistema.Empleado', on_delete=models.PROTECT, related_name='contratacionesEmpleado', blank=True) # Referencia al empleado que elabora el contrato
+    contratador = models.ForeignKey('Sistema.Empleado', on_delete=models.PROTECT, related_name='contratacionesEmpleado', blank=True) # Referencia al empleado que elabora el contrato
     archivo = models.URLField(null=True, blank=True)
 
     def __str__(self):

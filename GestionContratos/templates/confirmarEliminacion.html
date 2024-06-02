@@ -16,7 +16,7 @@
 {% if mensajeExito %}
 <p>Éxito al Borrar</p>
 {% else %}
-<p>¿Seguro que deseas eliminar el contrato {{ objeto.id }} de {{ objeto.tipo }} hecho por {{ objeto.contratista }}?</p>
+<p>¿Seguro que deseas eliminar el contrato {{ objeto.id }} de {{ objeto.tipo }} hecho por {{ objeto.contrato.contratador}}?</p>
 {% endif %}
 
 <!-- Mostrar mensaje de error si existe -->

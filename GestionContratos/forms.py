@@ -34,7 +34,7 @@ class EmpresaForm(forms.Form):
     representanteDui = forms.CharField(max_length=10, label="DUI del Representante")
 
 class ContratoForm(forms.Form):
-    contratista = forms.ModelChoiceField(queryset=Empleado.objects.all(), label="Contratista", disabled=True)
+    contratador = forms.ModelChoiceField(queryset=Empleado.objects.all(), label="Contratador", disabled=True)
     fechaInicio = forms.DateField(label="Fecha de Inicio", widget=forms.DateInput(attrs={'class': 'datepicker'}))
     fechaFin = forms.DateField(label="Fecha de Fin", widget=forms.DateInput(attrs={'class': 'datepicker'}))
     vigente = forms.BooleanField(initial=False, required=False, disabled=True, label="Vigente")
