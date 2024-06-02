@@ -72,12 +72,15 @@ form select {
 }
 
 .form3 button {
-    padding: 10px 20px;
+    padding: 0px 20px;
     background-color: #4c64af;
     color: white;
     border: none;
     cursor: pointer;
 }
+.as button{
+    padding: 0px 20px};
+
 
 .form3 button:hover {
     background-color: #4c87af;
@@ -113,3 +116,4 @@ form select {
 .tab .actions a:hover {
     text-decoration: underline;
 }
+a#spa {padding: 10px;}

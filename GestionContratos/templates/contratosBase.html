@@ -29,16 +29,18 @@
   
         </div>
       </nav>
-    
-    <a href="{{ request.path }}crear/">Nuevo Contrato</a>
+      <a href="{{ request.path }}crear/">
+   <button type="button" class="boton-azul">Nuevo Contrato</button></a>
 
-    <h2>Filtrar</h1>
+    <h2></h1>
     <form method="POST" class="form3">
         {% csrf_token %}
         {{form}}
-        <button>
-            Filtrar
-        </button>
+       <div>
+            <button class="as">
+                Filtrar
+            </button>
+        </div>
     </form> 
     
     <!-- Consulta Contratos -->
@@ -69,21 +71,22 @@
                 <td>{{ contrato.contrato.fechaFin }}</td>
                 <td>{{ contrato.contrato.aprobado }}</td>
                 <td>
-                    <a href="{% url 'verContrato' contrato.contrato.contratoId %}">Ver</a>
+                    <a href="{% url 'verContrato' contrato.contrato.contratoId %}" id="spa">
+                        <img src="{% static 'css/ver.png' %}" style="width:-5%;" class="w3-round"></a>
                     {% if esAdministrador %}
                         {% if contrato.contrato.aprobado %}
-                            <a href="{% url 'desaprobarContrato' contrato.contrato.contratoId %}">Desaprobar</a>
+                            <a href="{% url 'desaprobarContrato' contrato.contrato.contratoId %}"><img src="{% static 'css/desaprobar.png' %}"  class="w3-round"></a>
                         {% else %}
-                            <a href="{% url 'aprobarContrato' contrato.contrato.contratoId %}">Aprobar</a>
+                            <a href="{% url 'aprobarContrato' contrato.contrato.contratoId %}"><img src="{% static 'css/aprobar.png' %}"  class="w3-round"></a>
                         {% endif %}
                     {% endif %}
                     {% if contrato.contrato.contratador.user == user and not esAdministrador %}
-                        <a href="{% url 'editarContrato' contrato.contrato.contratoId %}">Editar</a>
+                        <a href="{% url 'editarContrato' contrato.contrato.contratoId %}"><img src="{% static 'css/editar.png' %}" class="w3-round"></a>
                     {% endif %}
 
                     {% if esAdministrador %}
-                        <a href="{% url 'editarContrato' contrato.contrato.contratoId %}">Editar</a>
-                        <a href="{% url 'eliminarContrato' contrato.contrato.contratoId %}">Eliminar</a>
+                        <a href="{% url 'editarContrato' contrato.contrato.contratoId %}"><img src="{% static 'css/editar.png' %}" class="w3-round"></a>
+                        <a href="{% url 'eliminarContrato' contrato.contrato.contratoId %}"><img src="{% static 'css/eliminar.png' %}" class="w3-round"></a>
                     {% endif %}
                 </td>
             </tr>
