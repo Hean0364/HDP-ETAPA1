@@ -37,7 +37,7 @@ class ContratoForm(forms.Form):
     contratador = forms.ModelChoiceField(queryset=Empleado.objects.all(), label="Contratador", disabled=True)
     fechaInicio = forms.DateField(label="Fecha de Inicio", widget=forms.DateInput(attrs={'class': 'datepicker'}))
     fechaFin = forms.DateField(label="Fecha de Fin", widget=forms.DateInput(attrs={'class': 'datepicker'}))
-    vigente = forms.BooleanField(initial=False, required=False, disabled=True, label="Vigente")
+    aprobado = forms.BooleanField(initial=False, required=False, disabled=True, label="Aprobado")
     contenido = forms.CharField(widget=forms.Textarea, label="Contenido del contrato")
     archivo = forms.URLField(label='URL del documento', required=False)
 

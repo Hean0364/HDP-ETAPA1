@@ -51,7 +51,7 @@ def guardarContratoBase(contratoBaseModelo, datosContratoBase):
     contratoBaseModelo.contratador = datosContratoBase["contratador"]
     contratoBaseModelo.fechaInicio = datosContratoBase["fechaInicio"]
     contratoBaseModelo.fechaFin = datosContratoBase["fechaFin"]
-    contratoBaseModelo.vigente = datosContratoBase["vigente"]
+    contratoBaseModelo.aprobado = datosContratoBase["aprobado"]
     contratoBaseModelo.contenido = datosContratoBase["contenido"]
     contratoBaseModelo.archivo = datosContratoBase["archivo"]
     contratoBaseModelo.save()
@@ -103,7 +103,7 @@ def definirCamposContratoBase(contratoBaseModelo, contratoBaseFormulario):
         "contratador": contratoBaseModelo.contratador,
         "fechaInicio": contratoBaseModelo.fechaInicio,
         "fechaFin": contratoBaseModelo.fechaFin,
-        "vigente": contratoBaseModelo.vigente,
+        "aprobado": contratoBaseModelo.aprobado,
         "contenido": contratoBaseModelo.contenido,
         "archivo": contratoBaseModelo.archivo
     }

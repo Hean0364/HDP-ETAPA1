@@ -9,7 +9,7 @@ class Contrato(models.Model):
     contratoId = models.AutoField(primary_key=True) # ID del contrato
     fechaInicio = models.DateField() # Fecha de inicio
     fechaFin = models.DateField(null=True)
-    vigente = models.BooleanField()
+    aprobado = models.BooleanField()
     contenido = models.TextField()
     contratador = models.ForeignKey('Sistema.Empleado', on_delete=models.PROTECT, related_name='contratacionesEmpleado', blank=True) # Referencia al empleado que elabora el contrato
     archivo = models.URLField(null=True, blank=True)

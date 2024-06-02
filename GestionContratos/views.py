@@ -35,7 +35,7 @@ def contratosArrendamiento(request):
         if contratante:
             contratosA = contratosA.filter(contratante__nombre__icontains=contratante)
         if vigencia != "":
-            contratosA = contratosA.filter(contrato__vigente=vigencia)
+            contratosA = contratosA.filter(contrato__aprobado=vigencia)
 
     return render(request, "contratosBase.html", {
         "contratos": contratosA,
@@ -68,7 +68,7 @@ def contratosServicio(request):
         if contratante:
             contratosA = contratosA.filter(contratante__nombre__icontains=contratante)
         if vigencia != "":
-            contratosA = contratosA.filter(contrato__vigente=vigencia)
+            contratosA = contratosA.filter(contrato__aprobado=vigencia)
 
     return render(request, "contratosBase.html", {
         "contratos": contratosA,
@@ -100,7 +100,7 @@ def contratosPersonal(request):
         if contratante:
             contratosA = contratosA.filter(contratante__persona__nombre__icontains=contratante)
         if vigencia != "":
-            contratosA = contratosA.filter(contrato__vigente=vigencia)
+            contratosA = contratosA.filter(contrato__aprobado=vigencia)
     
 
     return render(request, "contratosBase.html", {
@@ -117,7 +117,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
         formularioBase = ContratoForm()
         
         if esAdmin:
-            formularioBase.fields['vigente'].disabled = False
+            formularioBase.fields['aprobado'].disabled = False
 
         formularioBase.fields['contratador'].initial = Empleado.objects.get(user=request.user)
 
@@ -155,7 +155,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
 
             # Control
             if esAdmin:
-                formularioBase.fields['vigente'].disabled = False
+                formularioBase.fields['aprobado'].disabled = False
 
             formularioBase.fields['contratador'].initial = Empleado.objects.get(user=request.user)
 
@@ -201,7 +201,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
 
             # Control
             if esAdmin:
-                formularioBase.fields['vigente'].disabled = False
+                formularioBase.fields['aprobado'].disabled = False
 
             formularioBase.fields['contratador'].initial = Empleado.objects.get(user=request.user)
 
@@ -241,7 +241,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
 
             # Control
             if esAdmin:
-                formularioBase.fields['vigente'].disabled = False
+                formularioBase.fields['aprobado'].disabled = False
 
             formularioBase.fields['contratador'].initial = Empleado.objects.get(user=request.user)
             
@@ -301,7 +301,7 @@ def editarContrato(request, contratoId):
         print(contrato)
         # Metodos de control
         if esAdmin:
-            formularioBase.fields['vigente'].disabled = False    
+            formularioBase.fields['aprobado'].disabled = False    
         print(contrato.tipo)
         if contrato.tipo==TipoContrato.ARRENDAMIENTO_ARRENDAMIENTO.value:
 
@@ -486,7 +486,7 @@ def verContrato(request, contratoId):
         print(contrato)
         # Metodos de control
         if esAdmin:
-            formularioBase.fields['vigente'].disabled = False    
+            formularioBase.fields['aprobado'].disabled = False    
         print(contrato.tipo)
         if contrato.tipo==TipoContrato.ARRENDAMIENTO_ARRENDAMIENTO.value:
 
@@ -573,7 +573,7 @@ def verContrato(request, contratoId):
 def aprobarContrato(request, contratoId):
     try:
         contratoBase = Contrato.objects.get(contratoId=contratoId)
-        contratoBase.vigente = True
+        contratoBase.aprobado = True
         contratoBase.save()
         referer = request.META.get('HTTP_REFERER', reverse('home'))
         return redirect(referer) 
@@ -585,7 +585,7 @@ def aprobarContrato(request, contratoId):
 def desaprobarContrato(request, contratoId):
     try:
         contratoBase = Contrato.objects.get(contratoId=contratoId)
-        contratoBase.vigente = False
+        contratoBase.aprobado = False
         contratoBase.save()
         
         referer = request.META.get('HTTP_REFERER', reverse('home'))
