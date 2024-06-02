@@ -10,22 +10,30 @@
 {% block head %}
 {% endblock %}
 {% block content %}
-    <h1>Contratos</h1>
+    <h1>Gestión de Contratos</h1>
     <!-- Filtro -->
-    <nav>
-        <ul>
-            <li><a href="{% url 'contratosArrendamiento' %}">Arrendamiento</a></li>
-            <li><a href="{% url 'contratosServicio' %}">Servicio</a></li>
-            <li><a href="{% url 'contratosPersonal' %}">Personal</a></li>
-
-            </div>
-        </ul>
-    </nav>
+    <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:0;width:300px;" id="mySidebar"><br>
+        <div class="w3-container">
+          <a href="#" onclick="w3_close()" class="w3-hide-large w3-right w3-jumbo w3-padding w3-hover-grey" title="close menu">
+            <i class="fa fa-remove"></i>
+          </a>
+          {% load static %}
+          <img src="{% static 'css/logo.png' %}" style="width:45%;" class="w3-round"><br><br>
+          <h4><b>TIPOS DE CONTRATOS</b></h4>
+          <p class="w3-text-grey">Centro Comercial Lighthouse Creations S.A de C.V</p>
+        </div>
+        <div class="w3-bar-block">
+          <a href="{% url 'contratosArrendamiento' %}" id="arrendamientosBtn" class="w3-bar-item w3-button w3-padding"><i class="fa fa-building fa-fw w3-margin-right"></i>ARRENDAMIENTOS</a>
+          <a href="{% url 'contratosPersonal' %}" id="personalBtn" class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-fw w3-margin-right"></i>PERSONAL</a> 
+          <a href="{% url 'contratosServicio' %}" id="serviciosBtn" class="w3-bar-item w3-button w3-padding"><i class="fa fa-wifi fa-fw w3-margin-right"></i>SERVICIOS</a> 
+  
+        </div>
+      </nav>
     
     <a href="{{ request.path }}crear/">Nuevo Contrato</a>
 
     <h2>Filtrar</h1>
-    <form method="POST">
+    <form method="POST" class="form3">
         {% csrf_token %}
         {{form}}
         <button>
@@ -35,7 +43,7 @@
     
     <!-- Consulta Contratos -->
 
-    <table>
+    <table class="tab">
         <thead>
             <tr>
                 <th>Contrato</th>

@@ -1,7 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Login</h1>
+<style>
+    .login-container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
 <form method="POST">
     {% csrf_token %}
@@ -15,5 +23,83 @@
 <p style="color: red;"><strong>{{error}}</strong></p>
 {% endif %}
 
+    .login-container form {
+        display: flex;
+        flex-direction: column;
+    }
 
+    .login-container form p {
+        margin: 10px 0;
+    }
+
+    .login-container form label {
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    .login-container form input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .login-container form button {
+        padding: 10px;
+        background-color: #007BFF;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+
+    .login-container form button:hover {
+        background-color: #0056b3;
+    }
+
+    .error-message {
+        color: red;
+        text-align: center;
+        margin-top: 10px;
+    }
+    nav {
+        width: 100%;
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    }
+    nav a {
+        text-decoration: none;
+        color: #333;
+        margin: 0 10px;
+        font-family: Arial, sans-serif;
+
+    }
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #f0f0f0;
+    }
+</style>
+
+<div class="login-container">
+    <h1>Iniciar Sesión</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Login</button>
+    </form> 
+    {% if error %}
+    <p class="error-message"><strong>{{ error }}</strong></p>
+    {% endif %}
+</div>
 {% endblock %}

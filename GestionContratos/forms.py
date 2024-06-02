@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 
 
 class FiltroContratosForm(forms.Form):
-    desde = forms.DateField(label='Desde', required=False, widget=forms.DateInput(attrs={'class': 'datepicker'}))
+    desde = forms.DateField(label='Desde', required=False, widget=forms.DateInput(attrs={'class': 'datepicker','id':'form3'}))
     hasta = forms.DateField(label='Hasta', required=False, widget=forms.DateInput(attrs={'class': 'datepicker'}))
     #contratante = forms.ChoiceField(label='Contratante', choices=[], required=False)
     contratante = forms.CharField(label='Contratante', max_length=100, required=False) 

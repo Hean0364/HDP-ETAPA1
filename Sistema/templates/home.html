@@ -1,9 +1,13 @@
-{% extends "base.html" %}
+
+
+
+    {% extends "base.html" %}
+
 {% block content %}
-<h1>Home</h1>
+
 <div class="container">
     <a href="#" class="button">Compras</a>
-    <strong><a href="{% url 'contratosArrendamiento' %}" class="button active">Contratos</a></strong>
+    <a href="{% url 'contratosArrendamiento' %}" class="button active">Contratos</a>
     <a href="#" class="button">Marketing</a>
     <a href="#" class="button">Ventas</a>
     <a href="#" class="button">Contabilidad</a>
