@@ -1,7 +1,9 @@
+from django.core.validators import URLValidator
 from django import forms
 from django.forms import ModelForm
 from .models import Contrato, ContratoEmpresa, ContratoArrendamiento, ContratoEmpleado
 from Sistema.models import Empleado, Persona, Empresa, Domicilio
+from django.core.exceptions import ValidationError
 
 
 class FiltroContratosForm(forms.Form):
@@ -10,6 +12,7 @@ class FiltroContratosForm(forms.Form):
     #contratante = forms.ChoiceField(label='Contratante', choices=[], required=False)
     contratante = forms.CharField(label='Contratante', max_length=100, required=False) 
     vigencia = forms.ChoiceField(label='Estado de aprobación', choices=[('', 'Todos'), (True, 'Aprobados'), (False, 'No Aprobados')], required=False)
+
 
 # ******************************
 
@@ -36,6 +39,17 @@ class ContratoForm(forms.Form):
     fechaFin = forms.DateField(label="Fecha de Fin", widget=forms.DateInput(attrs={'class': 'datepicker'}))
     vigente = forms.BooleanField(initial=False, required=False, disabled=True, label="Vigente")
     contenido = forms.CharField(widget=forms.Textarea, label="Contenido del contrato")
+    archivo = forms.URLField(label='URL del documento', required=False)
+
+    def cleanArchivoUrl(self):
+        archivo = self.cleaned_data.get('archivo_url')
+        if archivo:
+            urlValidator = URLValidator()
+            try:
+                urlValidator(archivo)
+            except ValidationError:
+                raise ValidationError('La URL ingresada no es válida.')
+        return archivo
     
     def clean(self):
         cleaned_data = super().clean()
