@@ -69,7 +69,11 @@
                 {% endif %}
                 <td>{{ contrato.contrato.fechaInicio }}</td> 
                 <td>{{ contrato.contrato.fechaFin }}</td>
-                <td>{{ contrato.contrato.aprobado }}</td>
+                {% if contrato.contrato.aprobado %}
+                    <td>Aprobado</td>
+                {% else %}
+                    <td>No aprobado</td>
+                {% endif %}
                 <td>
                     <a href="{% url 'verContrato' contrato.contrato.contratoId %}" id="spa">
                         <img src="{% static 'css/ver.png' %}" style="width:-5%;" class="w3-round"></a>
