@@ -1,15 +1,18 @@
+from django.core.validators import URLValidator
 from django import forms
 from django.forms import ModelForm
 from .models import Contrato, ContratoEmpresa, ContratoArrendamiento, ContratoEmpleado
 from Sistema.models import Empleado, Persona, Empresa, Domicilio
+from django.core.exceptions import ValidationError
 
 
 class FiltroContratosForm(forms.Form):
-    desde = forms.DateField(label='Desde', required=False, widget=forms.DateInput(attrs={'class': 'datepicker'}))
+    desde = forms.DateField(label='Desde', required=False, widget=forms.DateInput(attrs={'class': 'datepicker','id':'form3'}))
     hasta = forms.DateField(label='Hasta', required=False, widget=forms.DateInput(attrs={'class': 'datepicker'}))
     #contratante = forms.ChoiceField(label='Contratante', choices=[], required=False)
     contratante = forms.CharField(label='Contratante', max_length=100, required=False) 
     vigencia = forms.ChoiceField(label='Estado de aprobación', choices=[('', 'Todos'), (True, 'Aprobados'), (False, 'No Aprobados')], required=False)
+
 
 # ******************************
 
@@ -31,11 +34,22 @@ class EmpresaForm(forms.Form):
     representanteDui = forms.CharField(max_length=10, label="DUI del Representante")
 
 class ContratoForm(forms.Form):
-    contratista = forms.ModelChoiceField(queryset=Empleado.objects.all(), label="Contratista", disabled=True)
+    contratador = forms.ModelChoiceField(queryset=Empleado.objects.all(), label="Contratador", disabled=True)
     fechaInicio = forms.DateField(label="Fecha de Inicio", widget=forms.DateInput(attrs={'class': 'datepicker'}))
     fechaFin = forms.DateField(label="Fecha de Fin", widget=forms.DateInput(attrs={'class': 'datepicker'}))
-    vigente = forms.BooleanField(initial=False, required=False, disabled=True, label="Vigente")
+    aprobado = forms.BooleanField(initial=False, required=False, disabled=True, label="Aprobado")
     contenido = forms.CharField(widget=forms.Textarea, label="Contenido del contrato")
+    archivo = forms.URLField(label='URL del documento', required=False)
+
+    def cleanArchivoUrl(self):
+        archivo = self.cleaned_data.get('archivo_url')
+        if archivo:
+            urlValidator = URLValidator()
+            try:
+                urlValidator(archivo)
+            except ValidationError:
+                raise ValidationError('La URL ingresada no es válida.')
+        return archivo
     
     def clean(self):
         cleaned_data = super().clean()

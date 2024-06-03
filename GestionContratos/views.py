@@ -35,7 +35,7 @@ def contratosArrendamiento(request):
         if contratante:
             contratosA = contratosA.filter(contratante__nombre__icontains=contratante)
         if vigencia != "":
-            contratosA = contratosA.filter(contrato__vigente=vigencia)
+            contratosA = contratosA.filter(contrato__aprobado=vigencia)
 
     return render(request, "contratosBase.html", {
         "contratos": contratosA,
@@ -68,7 +68,7 @@ def contratosServicio(request):
         if contratante:
             contratosA = contratosA.filter(contratante__nombre__icontains=contratante)
         if vigencia != "":
-            contratosA = contratosA.filter(contrato__vigente=vigencia)
+            contratosA = contratosA.filter(contrato__aprobado=vigencia)
 
     return render(request, "contratosBase.html", {
         "contratos": contratosA,
@@ -100,7 +100,7 @@ def contratosPersonal(request):
         if contratante:
             contratosA = contratosA.filter(contratante__persona__nombre__icontains=contratante)
         if vigencia != "":
-            contratosA = contratosA.filter(contrato__vigente=vigencia)
+            contratosA = contratosA.filter(contrato__aprobado=vigencia)
     
 
     return render(request, "contratosBase.html", {
@@ -112,14 +112,14 @@ def contratosPersonal(request):
 @requiereLogin
 def nuevoContrato(request, tipoContrato="arrendamiento"):
     esAdmin = checkAdmin(request)
-
+    
     if request.method == "GET":
         formularioBase = ContratoForm()
         
         if esAdmin:
-            formularioBase.fields['vigente'].disabled = False
+            formularioBase.fields['aprobado'].disabled = False
 
-        formularioBase.fields['contratista'].initial = Empleado.objects.get(user=request.user)
+        formularioBase.fields['contratador'].initial = Empleado.objects.get(user=request.user)
 
         if tipoContrato==TipoContrato.ARRENDAMIENTO_ARRENDAMIENTO.value.lower():
             formularioEmpresa = EmpresaForm()
@@ -131,15 +131,15 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
             
             print(formularioLocal.fields["locales"].choices)
             print(formularioEmpresa.is_valid())
-            return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin})
+            return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "titulo": "Crear contrato"})
         
         elif tipoContrato==TipoContrato.SERVICIO_EMPRESA.value.lower():
             formularioEmpresa = EmpresaForm(request.POST)
-            return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin})
+            return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "titulo": "Crear contrato"})
         
         elif tipoContrato==TipoContrato.PERSONAL_EMPLEADO.value.lower():
             formularioEmpleado = EmpleadoForm(request.POST)
-            return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin})
+            return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin, "titulo": "Crear contrato"})
         
         else: # nunca debería de suceder
             return HttpResponse("Error")
@@ -155,9 +155,9 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
 
             # Control
             if esAdmin:
-                formularioBase.fields['vigente'].disabled = False
+                formularioBase.fields['aprobado'].disabled = False
 
-            formularioBase.fields['contratista'].initial = Empleado.objects.get(user=request.user)
+            formularioBase.fields['contratador'].initial = Empleado.objects.get(user=request.user)
 
             locales = Local.objects.all()
             localesOpciones = [(local.localId, local) for local in locales]
@@ -181,6 +181,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                     "nuevoContratoArrendamiento": nuevoContratoArrendamiento,
                     "nuevaPersona": nuevaPersona,
                     "nuevaEmpresa": nuevaEmpresa
+
                 }
 
                 asignacionContratoArrendamiento(**asignaciones)
@@ -189,7 +190,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                 return redirect('contratosArrendamiento') 
             else:
                 mensaje = "Alguno de los datos ingresados no son válidos."
-                return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "error":mensaje})
+                return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "error":mensaje,"titulo": "Crear contrato"})
 
 
         elif tipoContrato==TipoContrato.SERVICIO_EMPRESA.value.lower():
@@ -200,9 +201,9 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
 
             # Control
             if esAdmin:
-                formularioBase.fields['vigente'].disabled = False
+                formularioBase.fields['aprobado'].disabled = False
 
-            formularioBase.fields['contratista'].initial = Empleado.objects.get(user=request.user)
+            formularioBase.fields['contratador'].initial = Empleado.objects.get(user=request.user)
 
             if formularioBase.is_valid() and formularioEmpresa.is_valid():
                 # Modelo contrato particular
@@ -228,7 +229,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                 return redirect('contratosServicio')             
             else:
                 mensaje = "Alguno de los datos ingresados no son válidos."
-                return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "error":mensaje})
+                return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "error":mensaje, "titulo": "Crear contrato"})
 
             
         elif tipoContrato==TipoContrato.PERSONAL_EMPLEADO.value.lower():
@@ -240,9 +241,9 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
 
             # Control
             if esAdmin:
-                formularioBase.fields['vigente'].disabled = False
+                formularioBase.fields['aprobado'].disabled = False
 
-            formularioBase.fields['contratista'].initial = Empleado.objects.get(user=request.user)
+            formularioBase.fields['contratador'].initial = Empleado.objects.get(user=request.user)
             
             # Datos del contrato particular
             if formularioBase.is_valid() and formularioEmpleado.is_valid():
@@ -269,7 +270,7 @@ def nuevoContrato(request, tipoContrato="arrendamiento"):
                 return redirect('contratosPersonal') 
             else:
                 mensaje = "Alguno de los datos ingresados no son válidos."
-                return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin, "error":mensaje})
+                return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin, "error":mensaje, "titulo": "Crear contrato"})
         
         else:
             # Regresar
@@ -292,7 +293,7 @@ def editarContrato(request, contratoId):
     except:
         return redirect('contratos')
 
-    permisos = esAdmin or contratoBase.contratista.user == request.user
+    permisos = esAdmin or contratoBase.contratador.user == request.user
     if not permisos:
         return redirect('contratos')        
     else:
@@ -300,7 +301,7 @@ def editarContrato(request, contratoId):
         print(contrato)
         # Metodos de control
         if esAdmin:
-            formularioBase.fields['vigente'].disabled = False    
+            formularioBase.fields['aprobado'].disabled = False    
         print(contrato.tipo)
         if contrato.tipo==TipoContrato.ARRENDAMIENTO_ARRENDAMIENTO.value:
 
@@ -322,11 +323,11 @@ def editarContrato(request, contratoId):
             formularioEmpresa = definirCamposEmpresa(actualEmpresa, formularioEmpresa)
             formularioLocal = definirCamposContratoArrendamiento(actualContratoArrendamiento, formularioLocal)
 
-            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+            formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
 
             if request.method == "GET":
-                return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin})
+                return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "titulo": "Editar contrato"})
             
             else:
                 formularioBase = ContratoForm(request.POST)
@@ -334,7 +335,7 @@ def editarContrato(request, contratoId):
                 formularioLocal = LocalForm(request.POST)
 
                 # Control
-                formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+                formularioBase.fields["contratador"].initial = actualContratoBase.contratador
                 formularioLocal.reserva = actualContratoArrendamiento.reserva
                 localesOpciones = [(local.localId, local) for local in locales]
                 formularioLocal.fields["locales"].choices = localesOpciones
@@ -357,7 +358,7 @@ def editarContrato(request, contratoId):
 
                 else:
                     mensaje = "Alguno de los datos ingresados no son válidos."
-                    return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "error":mensaje})
+                    return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "error":mensaje, "titulo": "Editar contrato"})
         
         elif contrato.tipo==TipoContrato.EMPLEADO.value:
             # Creamos formularios
@@ -374,16 +375,16 @@ def editarContrato(request, contratoId):
             formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
             formularioEmpleado = definirCamposEmpleado(actualEmpleado, formularioEmpleado)
 
-            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+            formularioBase.fields["contratador"].initial = actualContratoBase.contratador
             
             if request.method == "GET":
-                return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin})
+                return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin, "titulo": "Editar contrato"})
             else:
                 formularioBase = ContratoForm(request.POST)
                 formularioEmpleado = EmpleadoForm(request.POST)
 
                 # Control
-                formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+                formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
                 if formularioBase.is_valid() and formularioEmpleado.is_valid():
                     # Diccionario de asignación
@@ -402,7 +403,7 @@ def editarContrato(request, contratoId):
                     return redirect('contratosPersonal') 
                 else:
                     mensaje = "Alguno de los datos ingresados no son válidos."
-                    return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin, "error":mensaje})
+                    return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin, "error":mensaje, "titulo": "Editar contrato"})
 
         elif contrato.tipo==TipoContrato.EMPRESA.value:
 
@@ -419,17 +420,17 @@ def editarContrato(request, contratoId):
             formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
             formularioEmpresa = definirCamposEmpresa(actualEmpresa, formularioEmpresa)
 
-            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+            formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
             if request.method == "GET":
-                return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin})
+                return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "titulo": "Editar contrato"})
             
             else:
                 formularioBase = ContratoForm(request.POST)
                 formularioEmpresa = EmpresaForm(request.POST)
 
                 # Control
-                formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+                formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
                 if formularioBase.is_valid() and formularioEmpresa.is_valid():
                     #TODO:
@@ -450,7 +451,7 @@ def editarContrato(request, contratoId):
 
                 else:
                     mensaje = "Alguno de los datos ingresados no son válidos."
-                    return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "error":mensaje})
+                    return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "error":mensaje, "titulo": "Editar contrato"})
         
         else:
             return HttpResponse("Error inesperado.")
@@ -485,7 +486,7 @@ def verContrato(request, contratoId):
         print(contrato)
         # Metodos de control
         if esAdmin:
-            formularioBase.fields['vigente'].disabled = False    
+            formularioBase.fields['aprobado'].disabled = False    
         print(contrato.tipo)
         if contrato.tipo==TipoContrato.ARRENDAMIENTO_ARRENDAMIENTO.value:
 
@@ -507,14 +508,14 @@ def verContrato(request, contratoId):
             formularioEmpresa = definirCamposEmpresa(actualEmpresa, formularioEmpresa)
             formularioLocal = definirCamposContratoArrendamiento(actualContratoArrendamiento, formularioLocal)
 
-            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+            formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
             formularioBase = hacerFormularioReadonly(formularioBase)
             formularioEmpresa = hacerFormularioReadonly(formularioEmpresa)
             formularioLocal = hacerFormularioReadonly(formularioLocal)
 
             if request.method == "GET":
-                return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "readOnly":True})
+                return render(request,"formularioContratoArrendamiento.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa,"formLocal":formularioLocal, "esAdministrador": esAdmin, "readOnly":True, "titulo": "Ver contrato"})
             
         elif contrato.tipo==TipoContrato.EMPLEADO.value:
             # Creamos formularios
@@ -531,13 +532,13 @@ def verContrato(request, contratoId):
             formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
             formularioEmpleado = definirCamposEmpleado(actualEmpleado, formularioEmpleado)
 
-            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+            formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
             formularioBase = hacerFormularioReadonly(formularioBase)
             formularioEmpleado = hacerFormularioReadonly(formularioEmpleado)
 
             if request.method == "GET":
-                return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin, "readOnly":True})
+                return render(request,"formularioContratoEmpleado.html",{"formBase":formularioBase,"formEmpleado":formularioEmpleado,'esAdministrador': esAdmin, "readOnly":True, "titulo": "Ver contrato"})
 
         elif contrato.tipo==TipoContrato.EMPRESA.value:
 
@@ -554,13 +555,13 @@ def verContrato(request, contratoId):
             formularioBase = definirCamposContratoBase(actualContratoBase, formularioBase)
             formularioEmpresa = definirCamposEmpresa(actualEmpresa, formularioEmpresa)
 
-            formularioBase.fields["contratista"].initial = actualContratoBase.contratista
+            formularioBase.fields["contratador"].initial = actualContratoBase.contratador
 
             formularioBase = hacerFormularioReadonly(formularioBase)
             formularioEmpresa = hacerFormularioReadonly(formularioEmpresa)
 
             if request.method == "GET":
-                return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "readOnly":True})
+                return render(request,"formularioContratoServicio.html",{"formBase":formularioBase,"formEmpresa":formularioEmpresa, "esAdministrador": esAdmin, "readOnly":True, "titulo": "Ver contrato"})
             
         else:
             return HttpResponse("Error inesperado.")
@@ -572,7 +573,7 @@ def verContrato(request, contratoId):
 def aprobarContrato(request, contratoId):
     try:
         contratoBase = Contrato.objects.get(contratoId=contratoId)
-        contratoBase.vigente = True
+        contratoBase.aprobado = True
         contratoBase.save()
         referer = request.META.get('HTTP_REFERER', reverse('home'))
         return redirect(referer) 
@@ -584,7 +585,7 @@ def aprobarContrato(request, contratoId):
 def desaprobarContrato(request, contratoId):
     try:
         contratoBase = Contrato.objects.get(contratoId=contratoId)
-        contratoBase.vigente = False
+        contratoBase.aprobado = False
         contratoBase.save()
         
         referer = request.META.get('HTTP_REFERER', reverse('home'))

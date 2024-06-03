@@ -48,11 +48,12 @@ def checkConditions(a,b):
 
 
 def guardarContratoBase(contratoBaseModelo, datosContratoBase):
-    contratoBaseModelo.contratista = datosContratoBase["contratista"]
+    contratoBaseModelo.contratador = datosContratoBase["contratador"]
     contratoBaseModelo.fechaInicio = datosContratoBase["fechaInicio"]
     contratoBaseModelo.fechaFin = datosContratoBase["fechaFin"]
-    contratoBaseModelo.vigente = datosContratoBase["vigente"]
+    contratoBaseModelo.aprobado = datosContratoBase["aprobado"]
     contratoBaseModelo.contenido = datosContratoBase["contenido"]
+    contratoBaseModelo.archivo = datosContratoBase["archivo"]
     contratoBaseModelo.save()
 
 def guardarEmpresa(empresaModelo, representanteModelo, datosEmpresa):
@@ -99,11 +100,12 @@ def guardarContratoPersonal(contratoPersonalModelo, empleadoModelo):
 # *****************************************************************************
 def definirCamposContratoBase(contratoBaseModelo, contratoBaseFormulario):
     datosContratoBase = {
-        "contratista": contratoBaseModelo.contratista,
+        "contratador": contratoBaseModelo.contratador,
         "fechaInicio": contratoBaseModelo.fechaInicio,
         "fechaFin": contratoBaseModelo.fechaFin,
-        "vigente": contratoBaseModelo.vigente,
-        "contenido": contratoBaseModelo.contenido
+        "aprobado": contratoBaseModelo.aprobado,
+        "contenido": contratoBaseModelo.contenido,
+        "archivo": contratoBaseModelo.archivo
     }
     # FIXME:
     contratoBaseFormulario.initial = datosContratoBase

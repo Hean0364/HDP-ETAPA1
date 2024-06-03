@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,31 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Mi Aplicación{% endblock %}</title>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/stilo.css' %}">
+    <link rel="stylesheet" href="{% static 'css/w3.css' %}">
+</head>
     {% block head %}{% endblock %}
     
-</head>
-<body>
-    <header>
+    <body>
+
         <nav>
-            <ul>
-                <li><a href="{% url 'home' %}">Home</a></li>
-                <div>
+            <a href="{% url 'home' %}">Home</a>
+            <div>
                 {% if user.is_authenticated %}
                     {% if esAdministrador %}
-                    <li><a href="/admin/">Admin</a></li>
+                    <a href="/admin/">Administrador</a>
                     {% endif %}
-                <li><a href="{% url 'logout' %}">Logout</a></li>
+                    <a href="{% url 'logout' %}">Cerrar sesión</a>
                 {% else %}
-                <!-- Sin sesión.-->
-                <li><a href="{% url 'login' %}">Login</a></li>
+                    <!-- Sin sesión.-->
+                    {% if not request.path == '/login/' %}
+                        <a href="{% url 'login' %}">Iniciar sesión</a>
+                    {% endif %}
                 {% endif %}
-
-                </div>
-            </ul>
+            </div>
         </nav>
-    </header>
-    <main>
+    
         {% block content %}{% endblock %}
         
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

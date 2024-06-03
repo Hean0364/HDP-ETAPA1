@@ -1,6 +1,7 @@
 from django.db import models
 from GestionCentroComercial.utils import TipoContrato
 
+from django.core.validators import FileExtensionValidator
 
 # Create your models here.
 # Modelo: Contrato
@@ -8,10 +9,10 @@ class Contrato(models.Model):
     contratoId = models.AutoField(primary_key=True) # ID del contrato
     fechaInicio = models.DateField() # Fecha de inicio
     fechaFin = models.DateField(null=True)
-    vigente = models.BooleanField()
+    aprobado = models.BooleanField()
     contenido = models.TextField()
-    contratista = models.ForeignKey('Sistema.Empleado', on_delete=models.PROTECT, related_name='contratacionesEmpleado', blank=True) # Referencia al empleado que elabora el contrato
-
+    contratador = models.ForeignKey('Sistema.Empleado', on_delete=models.PROTECT, related_name='contratacionesEmpleado', blank=True) # Referencia al empleado que elabora el contrato
+    archivo = models.URLField(null=True, blank=True)
 
     def __str__(self):
         return f"Contrato {self.contratoId}"

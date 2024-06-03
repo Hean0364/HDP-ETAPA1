@@ -10,32 +10,42 @@
 {% block head %}
 {% endblock %}
 {% block content %}
-    <h1>Contratos</h1>
+    <h1>Gestión de Contratos</h1>
     <!-- Filtro -->
-    <nav>
-        <ul>
-            <li><a href="{% url 'contratosArrendamiento' %}">Arrendamiento</a></li>
-            <li><a href="{% url 'contratosServicio' %}">Servicio</a></li>
-            <li><a href="{% url 'contratosPersonal' %}">Personal</a></li>
+    <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:0;width:300px;" id="mySidebar"><br>
+        <div class="w3-container">
+          <a href="#" onclick="w3_close()" class="w3-hide-large w3-right w3-jumbo w3-padding w3-hover-grey" title="close menu">
+            <i class="fa fa-remove"></i>
+          </a>
+          {% load static %}
+          <img src="{% static 'css/logo.png' %}" style="width:45%;" class="w3-round"><br><br>
+          <h4><b>TIPOS DE CONTRATOS</b></h4>
+          <p class="w3-text-grey">Centro Comercial Lighthouse Creations S.A de C.V</p>
+        </div>
+        <div class="w3-bar-block">
+          <a href="{% url 'contratosArrendamiento' %}" id="arrendamientosBtn" class="w3-bar-item w3-button w3-padding"><i class="fa fa-building fa-fw w3-margin-right"></i>ARRENDAMIENTOS</a>
+          <a href="{% url 'contratosPersonal' %}" id="personalBtn" class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-fw w3-margin-right"></i>PERSONAL</a> 
+          <a href="{% url 'contratosServicio' %}" id="serviciosBtn" class="w3-bar-item w3-button w3-padding"><i class="fa fa-wifi fa-fw w3-margin-right"></i>SERVICIOS</a> 
+  
+        </div>
+      </nav>
+      <a href="{{ request.path }}crear/">
+   <button type="button" class="boton-azul">Nuevo Contrato</button></a>
 
-            </div>
-        </ul>
-    </nav>
-    
-    <a href="{{ request.path }}crear/">Nuevo Contrato</a>
-
-    <h2>Filtrar</h1>
-    <form method="POST">
+    <h2></h1>
+    <form method="POST" class="form3">
         {% csrf_token %}
         {{form}}
-        <button>
-            Filtrar
-        </button>
+       <div>
+            <button class="as">
+                Filtrar
+            </button>
+        </div>
     </form> 
     
     <!-- Consulta Contratos -->
 
-    <table>
+    <table class="tab">
         <thead>
             <tr>
                 <th>Contrato</th>
@@ -59,23 +69,28 @@
                 {% endif %}
                 <td>{{ contrato.contrato.fechaInicio }}</td> 
                 <td>{{ contrato.contrato.fechaFin }}</td>
-                <td>{{ contrato.contrato.vigente }}</td>
+                {% if contrato.contrato.aprobado %}
+                    <td>Aprobado</td>
+                {% else %}
+                    <td>No aprobado</td>
+                {% endif %}
                 <td>
-                    <a href="{% url 'verContrato' contrato.contrato.contratoId %}">Ver</a>
+                    <a href="{% url 'verContrato' contrato.contrato.contratoId %}" id="spa">
+                        <img src="{% static 'css/ver.png' %}" style="width:-5%;" class="w3-round"></a>
                     {% if esAdministrador %}
-                        {% if contrato.contrato.vigente %}
-                            <a href="{% url 'desaprobarContrato' contrato.contrato.contratoId %}">Desaprobar</a>
+                        {% if contrato.contrato.aprobado %}
+                            <a href="{% url 'desaprobarContrato' contrato.contrato.contratoId %}"><img src="{% static 'css/desaprobar.png' %}"  class="w3-round"></a>
                         {% else %}
-                            <a href="{% url 'aprobarContrato' contrato.contrato.contratoId %}">Aprobar</a>
+                            <a href="{% url 'aprobarContrato' contrato.contrato.contratoId %}"><img src="{% static 'css/aprobar.png' %}"  class="w3-round"></a>
                         {% endif %}
                     {% endif %}
-                    {% if contrato.contrato.contratista.user == user and not esAdministrador %}
-                        <a href="{% url 'editarContrato' contrato.contrato.contratoId %}">Editar</a>
+                    {% if contrato.contrato.contratador.user == user and not esAdministrador %}
+                        <a href="{% url 'editarContrato' contrato.contrato.contratoId %}"><img src="{% static 'css/editar.png' %}" class="w3-round"></a>
                     {% endif %}
 
                     {% if esAdministrador %}
-                        <a href="{% url 'editarContrato' contrato.contrato.contratoId %}">Editar</a>
-                        <a href="{% url 'eliminarContrato' contrato.contrato.contratoId %}">Eliminar</a>
+                        <a href="{% url 'editarContrato' contrato.contrato.contratoId %}"><img src="{% static 'css/editar.png' %}" class="w3-round"></a>
+                        <a href="{% url 'eliminarContrato' contrato.contrato.contratoId %}"><img src="{% static 'css/eliminar.png' %}" class="w3-round"></a>
                     {% endif %}
                 </td>
             </tr>
